@@ -77,8 +77,8 @@ For details, please visit: https://issuu.com/sjcrh/docs/st._jude_code_of_conduct
 
 ## Team Leads: Before the Event
 
-- [ ] Complete the [project profile](../README.md#project-profile).
-- [ ] Agree on one communication channel and a short check-in rhythm.
+- [x] Complete the [project profile](../README.md#project-profile).
+- [x] Agree on one communication channel and a short check-in rhythm.
 - [ ] Create three to six small first tasks in the project board or [project-plan.md](project-plan.md).
 - [ ] Use the plan and the expected output to suggest practical roles in [team.md](team.md).
 
@@ -91,6 +91,9 @@ For details, please visit: https://issuu.com/sjcrh/docs/st._jude_code_of_conduct
 - Confirm the inputs and expected output.
 - Make sure everyone can clone the repository and make a small change.
 - Agree on branch, commit, and review habits.
+- Run `docker compose up -d --build` from `src/docker/` (see [`src/docs/guide/quick-start.md`](../src/docs/guide/quick-start.md)) and confirm everyone can log in locally.
+- Confirm the demo Nextflow pipeline and dataset the team will launch during the demo.
+- Everyone claims one of the small first tasks in [project-plan.md](project-plan.md).
 
 ### Day 2: Build and learn
 
@@ -98,6 +101,8 @@ For details, please visit: https://issuu.com/sjcrh/docs/st._jude_code_of_conduct
 - Record decisions that change the approach in a decision log (create `decisions.md` if useful).
 - Document data sources, assumptions, and unexpected limitations as they appear.
 - Check in briefly and redistribute work when someone is blocked.
+- Register the demo pipeline and launch a job on Nomad; confirm live logs stream over SSE.
+- Work through the assigned small tasks (translations, UI polish, error messages) in parallel; keep pull requests small and reviewable.
 
 ### Day 3: Explain and hand off
 
@@ -105,6 +110,8 @@ For details, please visit: https://issuu.com/sjcrh/docs/st._jude_code_of_conduct
 - Make the main workflow understandable to someone who was not in the room.
 - Capture what worked, what did not, and what should happen next.
 - Run the available checks and record their results.
+- Rehearse the golden-path demo: register a pipeline → launch a job → watch live logs → ask the AI agent about job status.
+- Finish the demo script / known-limitations write-up and link it from the [Final Output and Handoff](#final-output-and-handoff) section below.
 
 # Final Output and Handoff
 
