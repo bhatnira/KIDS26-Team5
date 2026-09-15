@@ -1,0 +1,223 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  commit-summary:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Commit summary
+        run: |
+          echo "## Commit Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| | |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Commit** | \`$(git rev-parse --short HEAD)\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Author** | $(git log -1 --format='%an') |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Message** | $(git log -1 --format='%s') |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Time** | $(git log -1 --format='%ci') |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Files changed" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          git diff --stat HEAD~1 HEAD >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+  lockfile-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+
+      - name: Check lockfile is up to date
+        run: uv lock --check
+
+  skill-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+
+      - name: Install dependencies from lockfile
+        run: uv sync --frozen --only-group dev
+
+      - name: Validate SKILL.md files (agentskills spec)
+        run: |
+          echo "## Skill Validation Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          failed=0
+          passed=0
+          touch /tmp/skill_validate.log
+          for skill_dir in skills/*/; do
+            [ -f "$skill_dir/SKILL.md" ] || continue
+            if uv run agentskills validate "$skill_dir" >> /tmp/skill_validate.log 2>&1; then
+              passed=$((passed + 1))
+            else
+              failed=$((failed + 1))
+            fi
+          done
+          echo "**${passed} passed** | **${failed} failed**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/skill_validate.log >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/skill_validate.log
+          if [ "$failed" -gt 0 ]; then
+            exit 1
+          fi
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+        with:
+          enable-cache: true
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          uv sync --locked
+          uv pip install pytest requests
+
+      - name: Test ClawBio CLI
+        run: uv run python clawbio.py list
+
+      - name: Run PharmGx Reporter tests
+        run: uv run pytest skills/pharmgx-reporter/tests/test_pharmgx.py -v
+
+      - name: Run Equity Scorer tests
+        run: uv run pytest skills/equity-scorer/tests/test_equity_scorer.py -v
+
+      - name: Run NutriGx tests
+        run: uv run pytest skills/nutrigx/tests/test_nutrigx.py -v
+
+      - name: Run Genome Comparator tests
+        run: uv run pytest skills/genome-compare/tests/test_genome_compare.py -v
+
+      - name: Run ClinPGx tests
+        run: uv run pytest skills/clinpgx/tests/test_clinpgx.py -v
+
+      - name: Run GWAS PRS tests
+        run: uv run pytest skills/gwas-prs/tests/test_gwas_prs.py -v
+
+      - name: Run GWAS Lookup tests
+        run: uv run pytest skills/gwas-lookup/tests/test_gwas_lookup.py -v
+
+      - name: Run RNA-seq DE tests
+        run: uv run pytest skills/rnaseq-de/tests/test_rnaseq_de.py -v
+
+      - name: Run nf-core Sarek Wrapper tests
+        run: uv run pytest skills/nfcore-sarek-wrapper/tests/ -v
+
+      - name: Run Skill Builder tests
+        run: uv run pytest skills/skill-builder/tests/test_skill_builder.py -v
+
+      - name: Run bot security tests
+        run: uv run pytest bot/tests/test_security.py -v
+
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: |
+          uv sync --locked
+          uv pip install pytest pyyaml
+
+      - name: Run reference genome benchmarks
+        run: uv run pytest tests/benchmark/test_reference_genome.py -v
+
+  scientific-audit:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install ClawBio dependencies
+        run: uv sync --locked
+
+      - name: Install clawbio-bench
+        run: uv pip install "clawbio-bench @ git+https://github.com/biostochastics/clawbio_bench.git@49a0f11a8393b87a90f0721261a9bec5d52b61db"
+
+      - name: Run scientific correctness audit (smoke)
+        run: |
+          mkdir -p results
+          uv run clawbio-bench --smoke --repo . || true
+
+      - name: Render markdown summary
+        if: always()
+        run: |
+          if ls results/suite/*/verdicts/*.json 1>/dev/null 2>&1; then
+            SUITE_DIR=$(ls -d results/suite/*/ | head -1)
+            uv run clawbio-bench --render-markdown "$SUITE_DIR" --markdown-output results/summary.md || true
+          fi
+
+      - name: Upload bench verdicts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: scientific-audit-verdicts
+          path: results/
+          retention-days: 30
+
+      - name: Post summary
+        if: always()
+        run: |
+          echo "## Scientific Correctness Audit" >> $GITHUB_STEP_SUMMARY
+          if [ -f results/summary.md ]; then
+            cat results/summary.md >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Bench ran but no markdown summary was generated. Check artifacts." >> $GITHUB_STEP_SUMMARY
+          fi

@@ -1,0 +1,79 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Antelope logo">
+  <title>Antelope</title>
+  <defs>
+    <linearGradient id="aBody" x1="128" y1="62" x2="128" y2="238" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#34C3DE"/>
+      <stop offset="1" stop-color="#00A5CE"/>
+    </linearGradient>
+    <linearGradient id="aBelly" x1="128" y1="150" x2="128" y2="232" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#BDEBF6"/>
+      <stop offset="1" stop-color="#8FDCEF"/>
+    </linearGradient>
+    <linearGradient id="aHorn" x1="128" y1="8" x2="128" y2="86" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFC845"/>
+      <stop offset="1" stop-color="#E89200"/>
+    </linearGradient>
+  </defs>
+
+  <!-- antelope horns -->
+  <g stroke="#0B1622" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M104 84 C90 60 82 38 78 14 C90 30 104 54 122 78 Z" fill="url(#aHorn)"/>
+    <path d="M152 84 C166 60 174 38 178 14 C166 30 152 54 134 78 Z" fill="url(#aHorn)"/>
+  </g>
+  <g stroke="#C8780A" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.85">
+    <path d="M89 50 l13 -5"/>
+    <path d="M95 64 l13 -5"/>
+    <path d="M167 50 l-13 -5"/>
+    <path d="M161 64 l-13 -5"/>
+  </g>
+
+  <!-- ears -->
+  <g stroke="#0B1622" stroke-width="4">
+    <circle cx="84" cy="84" r="15" fill="url(#aBody)"/>
+    <circle cx="172" cy="84" r="15" fill="url(#aBody)"/>
+  </g>
+
+  <!-- body -->
+  <path d="M128 66 C176 66 206 102 206 152 C206 204 174 234 128 234 C82 234 50 204 50 152 C50 102 80 66 128 66 Z"
+        fill="url(#aBody)" stroke="#0B1622" stroke-width="5"/>
+
+  <!-- belly -->
+  <path d="M128 138 C158 138 178 162 178 190 C178 214 156 230 128 230 C100 230 78 214 78 190 C78 162 98 138 128 138 Z"
+        fill="url(#aBelly)" opacity="0.9"/>
+
+  <!-- arms -->
+  <g stroke="#0B1622" stroke-width="4" stroke-linejoin="round">
+    <path d="M58 168 C46 176 44 192 52 200 C60 196 66 184 66 172 Z" fill="url(#aBody)"/>
+    <path d="M198 168 C210 176 212 192 204 200 C196 196 190 184 190 172 Z" fill="url(#aBody)"/>
+  </g>
+
+  <!-- feet -->
+  <g stroke="#0B1622" stroke-width="4" stroke-linejoin="round">
+    <ellipse cx="104" cy="231" rx="17" ry="11" fill="url(#aBody)"/>
+    <ellipse cx="152" cy="231" rx="17" ry="11" fill="url(#aBody)"/>
+  </g>
+
+  <!-- eyes (classic twin gopher circles) -->
+  <g stroke="#0B1622" stroke-width="5">
+    <circle cx="105" cy="128" r="25" fill="#FFFFFF"/>
+    <circle cx="151" cy="128" r="25" fill="#FFFFFF"/>
+  </g>
+  <g fill="#0B1622">
+    <circle cx="114" cy="133" r="11"/>
+    <circle cx="142" cy="133" r="11"/>
+  </g>
+  <g fill="#FFFFFF">
+    <circle cx="110" cy="129" r="3.5"/>
+    <circle cx="138" cy="129" r="3.5"/>
+  </g>
+
+  <!-- nose -->
+  <path d="M128 150 C134 150 138 154 138 159 C138 164 133 167 128 167 C123 167 118 164 118 159 C118 154 122 150 128 150 Z"
+        fill="#0B1622"/>
+
+  <!-- buck teeth -->
+  <g stroke="#0B1622" stroke-width="3.5" stroke-linejoin="round">
+    <rect x="120" y="168" width="8" height="18" rx="3" fill="#FFFFFF"/>
+    <rect x="128" y="168" width="8" height="18" rx="3" fill="#FFFFFF"/>
+  </g>
+</svg>

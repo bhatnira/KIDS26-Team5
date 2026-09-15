@@ -1,0 +1,168 @@
+name: antelope
+
+# Full-stack Antelope deployment.
+#
+# The frontend is embedded into the Go binary (//go:embed), so the whole app
+# ships as ONE image built from the repo Dockerfile. This compose file runs
+# that image plus its two stateful dependencies (PostgreSQL, Redis) and a
+# local SMTP catcher (maildev) for the email flow.
+#
+# Nomad is an EXTERNAL service (not managed here): point ANTELOPE_NOMAD_HOST /
+# ANTELOPE_NOMAD_PORT at your cluster. The default reaches a Nomad agent
+# running on the docker host via host.docker.internal:4646.
+#
+# Configuration is env-driven. Non-secret structural/list defaults live in
+# ./config.yaml (mounted read-only); ANTELOPE_* env vars below override it.
+# Override any value at `docker compose up` time via your shell or a .env file.
+
+services:
+  antelope:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        VERSION: ${ANTELOPE_VERSION:-dev}
+    image: antelope:${ANTELOPE_VERSION:-dev}
+    ports:
+      - "127.0.0.1:${ANTELOPE_PORT:-8086}:8086"
+    environment:
+      # --- system ---
+      - ANTELOPE_CONFIG=/app/config.yaml
+      - ANTELOPE_SYSTEM_PORT=8086
+      # Defaults to debug so a no-secrets `docker compose up` boots. In release
+      # mode the server fails fast on the placeholder JWT keys / super-user
+      # password below (they are known-insecure defaults). For a real
+      # deployment set ANTELOPE_SYSTEM_MODE=release AND override the JWT keys,
+      # super-user password and DB password with real values.
+      - ANTELOPE_SYSTEM_MODE=${ANTELOPE_SYSTEM_MODE:-debug}
+      - ANTELOPE_SYSTEM_SUPER_USER_PASSWORD=${ANTELOPE_SYSTEM_SUPER_USER_PASSWORD:-password}
+      # Base64 32-byte AES-256 key encrypting per-user storage/LLM credentials at
+      # rest. Empty = plaintext-at-rest (still durable) + a startup warning.
+      # Generate with `openssl rand -base64 32`.
+      - ANTELOPE_SYSTEM_ENCRYPT_KEY=${ANTELOPE_SYSTEM_ENCRYPT_KEY:-}
+      # --- jwt (placeholder dev keys — override these in any real deployment) ---
+      - ANTELOPE_JWT_ACCESS_SIGNING_KEY=${ANTELOPE_JWT_ACCESS_SIGNING_KEY:-antelope@access}
+      - ANTELOPE_JWT_REFRESH_SIGNING_KEY=${ANTELOPE_JWT_REFRESH_SIGNING_KEY:-antelope@refresh}
+      # --- postgresql ---
+      - ANTELOPE_POSTGRESQL_HOST=postgres
+      - ANTELOPE_POSTGRESQL_PORT=5432
+      - ANTELOPE_POSTGRESQL_DB=${POSTGRES_DB:-antelope}
+      - ANTELOPE_POSTGRESQL_USERNAME=${POSTGRES_USER:-antelope}
+      - ANTELOPE_POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD:-antelope}
+      - ANTELOPE_POSTGRESQL_SSLMODE=disable
+      # --- redis ---
+      - ANTELOPE_REDIS_HOST=redis
+      - ANTELOPE_REDIS_PORT=6379
+      - ANTELOPE_REDIS_DB=0
+      - ANTELOPE_REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      # --- nomad (external) ---
+      - ANTELOPE_NOMAD_HOST=${ANTELOPE_NOMAD_HOST:-http://host.docker.internal}
+      - ANTELOPE_NOMAD_PORT=${ANTELOPE_NOMAD_PORT:-4646}
+      - ANTELOPE_NOMAD_NAMESPACE=${ANTELOPE_NOMAD_NAMESPACE:-default}
+      - ANTELOPE_NOMAD_REGION=${ANTELOPE_NOMAD_REGION:-global}
+      - ANTELOPE_NOMAD_TOKEN=${ANTELOPE_NOMAD_TOKEN:-}
+      # --- email (maildev: no auth, plain SMTP) ---
+      - ANTELOPE_EMAIL_HOST=maildev
+      - ANTELOPE_EMAIL_PORT=1025
+      - ANTELOPE_EMAIL_FROM=${ANTELOPE_EMAIL_FROM:-no-reply@antelope.dev}
+      - ANTELOPE_EMAIL_TLS_POLICY=disabled
+      # LLM is configured per-user in the UI (stored in Redis); there is no
+      # platform-wide ANTELOPE_LLM_* setting.
+    volumes:
+      # Structural/list defaults; ANTELOPE_* env above overrides these values.
+      - ./config.yaml:/app/config.yaml:ro
+      # Built-in agent skills need no mount: they are compiled into the image
+      # and unpacked to /app/skills/bundle on first start.
+    extra_hosts:
+      # Lets ANTELOPE_NOMAD_HOST=host.docker.internal reach a Nomad agent on
+      # the docker host (works on Linux too via the gateway alias).
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      maildev:
+        condition: service_started
+    networks:
+      - antelope-network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-antelope}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-antelope}
+      - POSTGRES_DB=${POSTGRES_DB:-antelope}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-antelope} -d ${POSTGRES_DB:-antelope}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - antelope-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - antelope-network
+    restart: unless-stopped
+
+  maildev:
+    image: maildev/maildev
+    environment:
+      - MAILDEV_SMTP_PORT=1025
+      - MAILDEV_WEB_PORT=1080
+    ports:
+      # Web UI for inspecting captured mail. SMTP (1025) stays internal.
+      - "127.0.0.1:${MAILDEV_WEB_PORT:-1080}:1080"
+    networks:
+      - antelope-network
+    restart: unless-stopped
+
+  # Web UI for inspecting the PostgreSQL database. The bundled `postgres`
+  # service is pre-registered via servers.json; pgpass auto-fills the password.
+  pgadmin:
+    image: dpage/pgadmin4:9.2.0
+    # pgadmin ignores pgpass unless it is mode 0600; fix it before launching.
+    entrypoint: ["sh", "-c", "chmod 600 /pgpass && exec /entrypoint.sh"]
+    user: root
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL:-admin@antelope.dev}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD:-pgadmin}
+      # Desktop mode: skip the per-user login and master-password prompts.
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
+    volumes:
+      # Pre-registers the bundled postgres service. servers.json + pgpass carry
+      # the POSTGRES_* defaults (antelope/antelope) — if you override
+      # POSTGRES_USER/POSTGRES_PASSWORD, update both files to match.
+      - ./pgadmin4/servers.json:/pgadmin4/servers.json:ro
+      - ./pgadmin4/pgpass:/pgpass
+    ports:
+      - "127.0.0.1:${PGADMIN_PORT:-5050}:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - antelope-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data: {}
+  redis_data: {}
+
+networks:
+  antelope-network:
+    driver: bridge

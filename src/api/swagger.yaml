@@ -1,0 +1,3146 @@
+basePath: /api/v1
+definitions:
+  agent.AttachmentRef:
+    properties:
+      bucket:
+        type: string
+      key:
+        type: string
+      mime_type:
+        type: string
+      name:
+        type: string
+      size:
+        type: integer
+      staged_path:
+        description: |-
+          StagedPath is the workspace-relative path the file is staged at. The
+          chat service pins it (from StagedInputPaths) before building the user
+          message, so the staged location and the message manifest can never
+          drift — and so attachments restored from earlier turns (see
+          SessionStateStagedAttachments) keep the path their manifest advertised.
+          Empty means "compute from StagedInputPaths".
+        type: string
+    type: object
+  agent.MCPConfigDto:
+    properties:
+      args:
+        items:
+          type: string
+        type: array
+      command:
+        type: string
+      description:
+        type: string
+      enabled:
+        type: boolean
+      headers:
+        additionalProperties:
+          type: string
+        type: object
+      name:
+        type: string
+      server_url:
+        type: string
+      timeout_seconds:
+        type: integer
+      transport:
+        type: string
+    type: object
+  agent.WorkspaceConfigDto:
+    properties:
+      bucket:
+        type: string
+      daytona_api_key:
+        type: string
+      daytona_api_url:
+        type: string
+    type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  models.AuthProviderType:
+    enum:
+    - basic
+    - ldap
+    - oidc
+    type: string
+    x-enum-varnames:
+    - AuthProviderBasic
+    - AuthProviderLDAP
+    - AuthProviderOIDC
+  models.JobTemplate:
+    properties:
+      createdAt:
+        type: string
+      defaults:
+        description: Default meta/env as JSON
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      engine:
+        description: '"nextflow", "wdl", "script"'
+        type: string
+      hcl_template:
+        type: string
+      id:
+        type: integer
+      is_built_in:
+        type: boolean
+      name:
+        type: string
+      schema:
+        description: JSON Schema for params validation
+        type: string
+      updatedAt:
+        type: string
+      version:
+        type: string
+    type: object
+  types.APIKeyGenerateDto:
+    properties:
+      expire_days:
+        maximum: 365
+        minimum: 1
+        type: integer
+      name:
+        type: string
+    required:
+    - expire_days
+    - name
+    type: object
+  types.AuthProviderAddDto:
+    properties:
+      display_name:
+        type: string
+      enabled:
+        type: boolean
+      ldap_base_dn:
+        type: string
+      ldap_bind_dn:
+        type: string
+      ldap_bind_pass:
+        type: string
+      ldap_filter:
+        type: string
+      ldap_tls_cert:
+        type: string
+      ldap_url:
+        description: LDAP fields
+        type: string
+      name:
+        type: string
+      oidc_client_id:
+        type: string
+      oidc_client_secret:
+        type: string
+      oidc_issuer_url:
+        description: OIDC fields
+        type: string
+      oidc_redirect_url:
+        type: string
+      priority:
+        type: integer
+      type:
+        $ref: '#/definitions/models.AuthProviderType'
+    required:
+    - name
+    - type
+    type: object
+  types.AuthProviderUpdateDto:
+    properties:
+      display_name:
+        type: string
+      enabled:
+        type: boolean
+      id:
+        type: integer
+      ldap_base_dn:
+        type: string
+      ldap_bind_dn:
+        type: string
+      ldap_bind_pass:
+        description: Only update if not empty
+        type: string
+      ldap_filter:
+        type: string
+      ldap_tls_cert:
+        type: string
+      ldap_url:
+        description: LDAP fields
+        type: string
+      name:
+        type: string
+      oidc_client_id:
+        type: string
+      oidc_client_secret:
+        description: Only update if not empty
+        type: string
+      oidc_issuer_url:
+        description: OIDC fields
+        type: string
+      oidc_redirect_url:
+        type: string
+      priority:
+        type: integer
+      type:
+        $ref: '#/definitions/models.AuthProviderType'
+    required:
+    - id
+    - name
+    - type
+    type: object
+  types.ChangePasswordDto:
+    properties:
+      new_password:
+        type: string
+      old_password:
+        type: string
+    required:
+    - new_password
+    - old_password
+    type: object
+  types.CreateBucketReqDto:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  types.EmailDto:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  types.JobAddDto:
+    properties:
+      pipeline_name:
+        type: string
+      pipeline_params:
+        items:
+          type: integer
+        type: array
+      pipeline_version:
+        type: string
+      user_id:
+        type: integer
+    required:
+    - pipeline_name
+    - pipeline_params
+    - pipeline_version
+    type: object
+  types.JobDeleteDto:
+    properties:
+      job_id:
+        type: integer
+      user_id:
+        type: integer
+    required:
+    - job_id
+    type: object
+  types.JobStopDto:
+    properties:
+      job_id:
+        type: integer
+      user_id:
+        type: integer
+    required:
+    - job_id
+    type: object
+  types.LLMConfigAddDto:
+    properties:
+      api_key:
+        type: string
+      base_url:
+        type: string
+      insecure_skip_verify:
+        type: boolean
+      is_default:
+        type: boolean
+      max_tokens:
+        type: integer
+      model:
+        type: string
+      name:
+        type: string
+      provider:
+        type: string
+      temperature:
+        type: number
+      thinking_effort:
+        type: string
+      thinking_enabled:
+        type: boolean
+    required:
+    - api_key
+    - model
+    - name
+    - provider
+    type: object
+  types.LLMTestConnectionDto:
+    properties:
+      api_key:
+        type: string
+      base_url:
+        type: string
+      insecure_skip_verify:
+        type: boolean
+      max_tokens:
+        type: integer
+      model:
+        type: string
+      provider:
+        type: string
+      temperature:
+        type: number
+      thinking_effort:
+        type: string
+      thinking_enabled:
+        type: boolean
+    required:
+    - api_key
+    - model
+    - provider
+    type: object
+  types.LdapLoginDto:
+    properties:
+      password:
+        type: string
+      provider:
+        description: Provider name
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - provider
+    - username
+    type: object
+  types.LoginDto:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  types.OidcCallbackDto:
+    properties:
+      code:
+        type: string
+      state:
+        type: string
+    required:
+    - code
+    - state
+    type: object
+  types.PipelineAddDto:
+    properties:
+      author:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      repository:
+        type: string
+      version:
+        type: string
+    required:
+    - name
+    - repository
+    - version
+    type: object
+  types.PipelineDeleteDto:
+    properties:
+      name:
+        type: string
+      version:
+        type: string
+    required:
+    - name
+    - version
+    type: object
+  types.PresignedURLReqDto:
+    properties:
+      bucket:
+        type: string
+      key:
+        type: string
+    required:
+    - bucket
+    - key
+    type: object
+  types.RegisterDto:
+    properties:
+      code:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - code
+    - email
+    - password
+    type: object
+  types.ResetPasswordDto:
+    properties:
+      code:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - code
+    - email
+    - password
+    type: object
+  types.TestStorageConnectionDto:
+    properties:
+      access_key:
+        type: string
+      host:
+        type: string
+      insecure_skip_verify:
+        type: boolean
+      port:
+        maximum: 65535
+        minimum: 1
+        type: integer
+      region:
+        type: string
+      secret_key:
+        type: string
+      use_ssl:
+        type: boolean
+    required:
+    - access_key
+    - host
+    - port
+    - secret_key
+    type: object
+  types.UpdateTokenDto:
+    properties:
+      refreshToken:
+        type: string
+    required:
+    - refreshToken
+    type: object
+  types.UserAddDto:
+    properties:
+      department:
+        type: string
+      email:
+        type: string
+      group:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      status:
+        maximum: 1
+        minimum: 0
+        type: integer
+    required:
+    - department
+    - email
+    - group
+    - name
+    - password
+    - role
+    type: object
+  types.UserEditDto:
+    properties:
+      department:
+        type: string
+      email:
+        type: string
+      group:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+      status:
+        maximum: 1
+        minimum: 0
+        type: integer
+    required:
+    - department
+    - email
+    - group
+    - name
+    - role
+    type: object
+  types.UserStorageConfigDto:
+    properties:
+      access_key:
+        type: string
+      host:
+        type: string
+      insecure_skip_verify:
+        type: boolean
+      port:
+        maximum: 65535
+        minimum: 1
+        type: integer
+      region:
+        type: string
+      secret_key:
+        type: string
+      use_ssl:
+        type: boolean
+    required:
+    - access_key
+    - host
+    - port
+    - secret_key
+    type: object
+  types.UserUpdateProfileDto:
+    properties:
+      department:
+        type: string
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  v1.conversationCreateDto:
+    properties:
+      title:
+        type: string
+    type: object
+  v1.sendMessageDto:
+    properties:
+      attachments:
+        items:
+          $ref: '#/definitions/agent.AttachmentRef'
+        type: array
+      content:
+        type: string
+    type: object
+host: localhost:8086
+info:
+  contact:
+    name: Antelope Team
+  description: Antelope bioinformatics pipeline management platform API.
+  license:
+    name: MIT
+  title: Antelope API
+  version: "1.0"
+paths:
+  /admin/dashboard/stats:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Admin dashboard stats
+      tags:
+      - dashboard
+  /agent/mcp-configs:
+    get:
+      description: List MCP configs
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List MCP configs
+      tags:
+      - agent
+    post:
+      consumes:
+      - application/json
+      description: Add MCP config
+      parameters:
+      - description: Request body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/agent.MCPConfigDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Add MCP config
+      tags:
+      - agent
+  /agent/mcp-configs/{id}:
+    delete:
+      description: Delete MCP config
+      parameters:
+      - description: MCP config ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete MCP config
+      tags:
+      - agent
+    put:
+      consumes:
+      - application/json
+      description: Update MCP config
+      parameters:
+      - description: MCP config ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Request body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/agent.MCPConfigDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update MCP config
+      tags:
+      - agent
+  /agent/sessions/{id}/artifacts:
+    get:
+      description: List session artifacts
+      parameters:
+      - description: Session ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List session artifacts
+      tags:
+      - agent
+  /agent/sessions/{id}/artifacts/{key}:
+    get:
+      description: Download session artifact
+      parameters:
+      - description: Session ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Artifact key
+        in: path
+        name: key
+        required: true
+        type: string
+      - description: Artifact version
+        in: query
+        name: version
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Download session artifact
+      tags:
+      - agent
+  /agent/skills:
+    get:
+      description: |-
+        List the built-in skill library plus the caller's own skills.
+        The built-in library is ~700 skills, so results are filtered and
+        paged server-side; the response also carries the domain facets and
+        the loaded library's provenance.
+      parameters:
+      - description: Free-text match on name, description, domain and tags
+        in: query
+        name: search
+        type: string
+      - description: Restrict to one domain
+        in: query
+        name: domain
+        type: string
+      - description: Restrict to built-in or user skills
+        enum:
+        - global
+        - user
+        in: query
+        name: scope
+        type: string
+      - description: Page size (default 50, max 200)
+        in: query
+        name: limit
+        type: integer
+      - description: Page offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List skills
+      tags:
+      - agent
+  /agent/skills/{name}:
+    get:
+      description: Get skill
+      parameters:
+      - description: Skill name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get skill
+      tags:
+      - agent
+  /agent/workspace-config:
+    get:
+      description: Get workspace config
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get workspace config
+      tags:
+      - agent
+    put:
+      consumes:
+      - application/json
+      description: Update workspace config
+      parameters:
+      - description: Request body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/agent.WorkspaceConfigDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update workspace config
+      tags:
+      - agent
+  /auth/ldap/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate a user via LDAP
+      parameters:
+      - description: LDAP credentials
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.LdapLoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: LDAP login
+      tags:
+      - auth
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate a user with email and password
+      parameters:
+      - description: Login credentials
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.LoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Local login
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      description: Log out the current user and invalidate the session
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Logout
+      tags:
+      - auth
+  /auth/oidc/{provider}/start:
+    get:
+      description: Mint a one-time state nonce and return the provider authorization
+        URL to redirect to
+      parameters:
+      - description: Provider name
+        in: path
+        name: provider
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Start OIDC login
+      tags:
+      - auth
+  /auth/oidc/callback:
+    post:
+      consumes:
+      - application/json
+      description: Handle the OIDC provider callback and complete authentication
+      parameters:
+      - description: OIDC callback payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.OidcCallbackDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: OIDC callback
+      tags:
+      - auth
+  /auth/providers:
+    get:
+      description: Get the list of currently enabled authentication providers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: List enabled auth providers
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Obtain a new access token using a refresh token
+      parameters:
+      - description: Refresh token
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.UpdateTokenDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Refresh access token
+      tags:
+      - auth
+  /cab/fastqQuery:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Proxy FASTQ query to CAB
+      tags:
+      - proxy
+  /cab/pipeline:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Pipeline submit payload
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Proxy pipeline submit to CAB
+      tags:
+      - proxy
+  /chat/conversations:
+    get:
+      description: List conversations
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List conversations
+      tags:
+      - chat
+    post:
+      consumes:
+      - application/json
+      description: Create conversation
+      parameters:
+      - description: Request body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.conversationCreateDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create conversation
+      tags:
+      - chat
+  /chat/conversations/{id}:
+    delete:
+      description: Delete conversation
+      parameters:
+      - description: Conversation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete conversation
+      tags:
+      - chat
+    get:
+      description: Get conversation
+      parameters:
+      - description: Conversation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get conversation
+      tags:
+      - chat
+  /chat/conversations/{id}/messages:
+    post:
+      consumes:
+      - application/json
+      description: Send message (SSE stream)
+      parameters:
+      - description: Conversation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Request body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.sendMessageDto'
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Send message (SSE stream)
+      tags:
+      - chat
+  /job/add:
+    post:
+      consumes:
+      - application/json
+      description: Submit a new Nextflow job for the current user
+      parameters:
+      - description: Job submission payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.JobAddDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Submit job
+      tags:
+      - jobs
+  /job/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a job owned by the current user
+      parameters:
+      - description: Job delete payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.JobDeleteDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete job
+      tags:
+      - jobs
+  /job/details:
+    get:
+      description: Get details of a job owned by the current user
+      parameters:
+      - description: Job ID
+        in: query
+        name: job_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get job details
+      tags:
+      - jobs
+  /job/stop:
+    post:
+      consumes:
+      - application/json
+      description: Stop a running job owned by the current user
+      parameters:
+      - description: Job stop payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.JobStopDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Stop job
+      tags:
+      - jobs
+  /llm/configs:
+    get:
+      description: List LLM configs
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List LLM configs
+      tags:
+      - llm-config
+    post:
+      consumes:
+      - application/json
+      description: Add LLM config
+      parameters:
+      - description: LLM config
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.LLMConfigAddDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Add LLM config
+      tags:
+      - llm-config
+  /llm/configs/{id}:
+    delete:
+      description: Delete LLM config
+      parameters:
+      - description: Config ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete LLM config
+      tags:
+      - llm-config
+    put:
+      consumes:
+      - application/json
+      description: Update LLM config
+      parameters:
+      - description: Config ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: LLM config
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.LLMConfigAddDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update LLM config
+      tags:
+      - llm-config
+  /llm/test-connection:
+    post:
+      consumes:
+      - application/json
+      description: Test LLM connection
+      parameters:
+      - description: Test connection
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.LLMTestConnectionDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Test LLM connection
+      tags:
+      - llm-config
+  /notifications:
+    get:
+      description: Returns a paginated list of the authenticated user's notifications.
+      parameters:
+      - description: Page number (default 1)
+        in: query
+        name: page
+        type: integer
+      - description: Page size (default 20, max 100)
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List notifications
+      tags:
+      - notifications
+  /notifications/{id}/read:
+    put:
+      description: Mark notification read
+      parameters:
+      - description: Notification ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Mark notification read
+      tags:
+      - notifications
+  /notifications/read-all:
+    put:
+      description: Mark all notifications read
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Mark all notifications read
+      tags:
+      - notifications
+  /notifications/stream:
+    get:
+      description: Notifications SSE stream
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Notifications SSE stream
+      tags:
+      - notifications
+  /pipeline/add:
+    post:
+      consumes:
+      - application/json
+      description: Add pipeline
+      parameters:
+      - description: pipeline payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.PipelineAddDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Add pipeline
+      tags:
+      - pipelines
+  /pipeline/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete pipeline
+      parameters:
+      - description: pipeline delete payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.PipelineDeleteDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete pipeline
+      tags:
+      - pipelines
+  /pipeline/list:
+    get:
+      description: List pipelines
+      parameters:
+      - description: page number
+        in: query
+        name: page
+        type: string
+      - description: page size
+        in: query
+        name: page_size
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: List pipelines
+      tags:
+      - pipelines
+  /pipeline/list_all:
+    get:
+      description: List all pipelines
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: List all pipelines
+      tags:
+      - pipelines
+  /pipeline/schema:
+    get:
+      description: Get pipeline parameter schema
+      parameters:
+      - description: repository
+        in: query
+        name: repository
+        type: string
+      - description: version
+        in: query
+        name: version
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get pipeline parameter schema
+      tags:
+      - pipelines
+  /pipeline/update:
+    post:
+      consumes:
+      - application/json
+      description: Update pipeline
+      parameters:
+      - description: pipeline payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.PipelineAddDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update pipeline
+      tags:
+      - pipelines
+  /ready:
+    get:
+      description: Readiness probe
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Readiness probe
+      tags:
+      - health
+  /storage/buckets:
+    get:
+      description: List buckets
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List buckets
+      tags:
+      - storage
+    post:
+      consumes:
+      - application/json
+      description: Create bucket
+      parameters:
+      - description: Create bucket request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.CreateBucketReqDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create bucket
+      tags:
+      - storage
+  /storage/buckets/{bucket}:
+    delete:
+      description: Delete bucket
+      parameters:
+      - description: Bucket name
+        in: path
+        name: bucket
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete bucket
+      tags:
+      - storage
+  /storage/config:
+    delete:
+      description: Delete storage config
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete storage config
+      tags:
+      - storage
+    get:
+      description: Get storage config
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get storage config
+      tags:
+      - storage
+    post:
+      consumes:
+      - application/json
+      description: Save storage config
+      parameters:
+      - description: Storage config
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.UserStorageConfigDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Save storage config
+      tags:
+      - storage
+  /storage/download-url:
+    post:
+      consumes:
+      - application/json
+      description: Get presigned download URL
+      parameters:
+      - description: Presigned URL request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.PresignedURLReqDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get presigned download URL
+      tags:
+      - storage
+  /storage/objects:
+    delete:
+      description: Delete object
+      parameters:
+      - description: Bucket name
+        in: query
+        name: bucket
+        type: string
+      - description: Object key
+        in: query
+        name: key
+        type: string
+      - description: Delete recursively
+        in: query
+        name: recursive
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete object
+      tags:
+      - storage
+    get:
+      description: List objects
+      parameters:
+      - description: Bucket name
+        in: query
+        name: bucket
+        type: string
+      - description: Object prefix
+        in: query
+        name: prefix
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List objects
+      tags:
+      - storage
+  /storage/test-connection:
+    post:
+      consumes:
+      - application/json
+      description: Test storage connection
+      parameters:
+      - description: Connection params
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.TestStorageConnectionDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Test storage connection
+      tags:
+      - storage
+  /storage/upload-url:
+    post:
+      consumes:
+      - application/json
+      description: Get presigned upload URL
+      parameters:
+      - description: Presigned URL request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.PresignedURLReqDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get presigned upload URL
+      tags:
+      - storage
+  /system/auth/provider/add:
+    post:
+      consumes:
+      - application/json
+      description: Add a new authentication provider
+      parameters:
+      - description: Auth provider config
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.AuthProviderAddDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Add auth provider
+      tags:
+      - auth-providers
+  /system/auth/provider/delete/{id}:
+    delete:
+      description: Delete an authentication provider by ID
+      parameters:
+      - description: Provider ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete auth provider
+      tags:
+      - auth-providers
+  /system/auth/provider/test/{id}:
+    post:
+      description: Test the connectivity/configuration of an authentication provider
+        by ID
+      parameters:
+      - description: Provider ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Test auth provider
+      tags:
+      - auth-providers
+  /system/auth/provider/update:
+    post:
+      consumes:
+      - application/json
+      description: Update an existing authentication provider
+      parameters:
+      - description: Auth provider config
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.AuthProviderUpdateDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update auth provider
+      tags:
+      - auth-providers
+  /system/auth/providers:
+    get:
+      description: Get the list of all configured authentication providers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List all auth providers
+      tags:
+      - auth-providers
+  /system/user/add:
+    post:
+      consumes:
+      - application/json
+      description: Add user
+      parameters:
+      - description: User payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.UserAddDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Add user
+      tags:
+      - system-users
+  /system/user/delete/{id}:
+    delete:
+      description: Delete user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete user
+      tags:
+      - system-users
+  /system/user/list:
+    get:
+      description: List users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List users
+      tags:
+      - system-users
+  /system/user/update:
+    post:
+      consumes:
+      - application/json
+      description: Update user
+      parameters:
+      - description: User payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.UserEditDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update user
+      tags:
+      - system-users
+  /templates:
+    get:
+      description: List job templates
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: List job templates
+      tags:
+      - templates
+    post:
+      consumes:
+      - application/json
+      description: Create job template
+      parameters:
+      - description: job template payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.JobTemplate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create job template
+      tags:
+      - templates
+  /templates/{id}:
+    delete:
+      description: Delete job template
+      parameters:
+      - description: template id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete job template
+      tags:
+      - templates
+    get:
+      description: Get job template
+      parameters:
+      - description: template id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get job template
+      tags:
+      - templates
+    put:
+      consumes:
+      - application/json
+      description: Update job template
+      parameters:
+      - description: template id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: job template updates
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update job template
+      tags:
+      - templates
+  /user/api-keys:
+    get:
+      description: List the authenticated user's API keys (no secret material).
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List API keys
+      tags:
+      - api-keys
+    post:
+      consumes:
+      - application/json
+      description: Generate a personal API key (JWT access token). Returned once.
+      parameters:
+      - description: API key payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.APIKeyGenerateDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Generate API key
+      tags:
+      - api-keys
+  /user/api-keys/{id}:
+    delete:
+      description: Revoke one of the authenticated user's API keys.
+      parameters:
+      - description: API key ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Revoke API key
+      tags:
+      - api-keys
+  /user/dashboard/stats:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Current user dashboard stats
+      tags:
+      - dashboard
+  /user/job/log:
+    get:
+      description: Stream a job's log over Server-Sent Events
+      parameters:
+      - description: Nomad allocation ID
+        in: query
+        name: allocId
+        required: true
+        type: string
+      - description: Log type (stdout or stderr)
+        in: query
+        name: logType
+        type: string
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Stream job log via SSE
+      tags:
+      - jobs
+  /user/jobs:
+    get:
+      description: List jobs for the current user with pagination
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List current user's jobs
+      tags:
+      - jobs
+  /user/password:
+    post:
+      consumes:
+      - application/json
+      description: Change password
+      parameters:
+      - description: Password payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.ChangePasswordDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Change password
+      tags:
+      - user
+  /user/profile:
+    get:
+      description: Get current user profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get current user profile
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: Update profile
+      parameters:
+      - description: Profile payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.UserUpdateProfileDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update profile
+      tags:
+      - user
+  /user/register:
+    post:
+      consumes:
+      - application/json
+      description: Register user
+      parameters:
+      - description: Registration payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.RegisterDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Register user
+      tags:
+      - user
+  /user/register/code:
+    post:
+      consumes:
+      - application/json
+      description: Send registration code
+      parameters:
+      - description: Email payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.EmailDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Send registration code
+      tags:
+      - user
+  /user/reset:
+    post:
+      consumes:
+      - application/json
+      description: Reset a local account's password after email-code verification
+      parameters:
+      - description: Reset password payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.ResetPasswordDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Reset password
+      tags:
+      - user
+  /user/reset/code:
+    post:
+      consumes:
+      - application/json
+      description: Send a verification code to reset a local account's password
+      parameters:
+      - description: Email payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.EmailDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Send password reset code
+      tags:
+      - user
+securityDefinitions:
+  BearerAuth:
+    description: Enter "Bearer {accessToken}"
+    in: header
+    name: Authorization
+    type: apiKey
+  RefreshAuth:
+    description: Enter "Bearer {refreshToken}" — used only for /auth/refresh
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

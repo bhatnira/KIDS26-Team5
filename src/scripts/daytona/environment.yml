@@ -1,0 +1,370 @@
+# Conda environment for the Antelope agent sandbox.
+#
+# This is the single source of truth for what the sandbox can run. It is derived
+# from a static analysis of the 710 skills in the built-in library (see
+# scripts/daytona/README.md, "How this list was derived"): every Python import,
+# R library() call and shell command in every SKILL.md, run.py and .R file was
+# extracted and ranked, and everything that appears is included here unless it is
+# listed under "Deliberately excluded" in the README.
+#
+# Conventions:
+#   - Bioinformatics packages come from bioconda; everything else from
+#     conda-forge. Channel priority is strict, and conda-forge is listed first,
+#     which is what bioconda itself requires.
+#   - R packages come from conda too, not install.packages(): CRAN packages are
+#     `r-<lowercase-name>` (conda-forge) and Bioconductor packages are
+#     `bioconductor-<lowercase-name>` (bioconda).
+#   - Versions are deliberately left unpinned except where a floor matters. The
+#     lockfile equivalent is the built image itself, which is tagged and
+#     registered as an immutable Daytona snapshot.
+#
+# Adding a package: put it in the right section, rebuild, and let the build-time
+# verification (verify-runtime.sh) prove it actually imports.
+name: antelope
+
+channels:
+  - conda-forge
+  - bioconda
+
+dependencies:
+  # ── Interpreters ──────────────────────────────────────────────────────────
+  # Python is invoked by the agent as a bare `python3` from a non-interactive
+  # `bash -c`, so this environment is placed on PATH by the image rather than
+  # activated by a shell profile.
+  #
+  # 3.12, NOT 3.11: bioconda currently builds its Python extensions for 3.10,
+  # 3.12 and 3.13 and skips 3.11 entirely. cooltools, macs3, rdkit and others
+  # publish no cp311 build at all, so pinning 3.11 makes the environment
+  # unsolvable no matter what else changes. Verify with a --solve-only run
+  # before moving this pin.
+  - python=3.12
+  - pip
+  - r-base=4.3
+
+  # ── Python: scientific core ───────────────────────────────────────────────
+  # numpy/pandas/matplotlib appear in 395/376/239 skills respectively.
+  - numpy
+  - pandas
+  - scipy
+  - matplotlib-base
+  - seaborn
+  - scikit-learn
+  - statsmodels
+  - networkx
+  - plotly
+  - h5py
+  - zarr
+  - numba
+  - joblib
+  - pyarrow
+  - polars
+  - openpyxl
+  - requests
+  - pyyaml
+  - tqdm
+  - click
+  - rich
+  - pydantic
+  - jinja2
+  - reportlab # PDF clinical reports (wes-clinical-report-*)
+  - upsetplot
+  - adjusttext
+  - ipykernel # run_python_inline
+  - pytest # skills ship their own test suites
+
+  # ── Python: bioinformatics ────────────────────────────────────────────────
+  - biopython # Bio.* — the single most referenced import (480 skills)
+  - pysam
+  - cyvcf2
+  - pybedtools
+  - bioframe
+  - pybigwig
+  - pyfaidx
+  - pyranges
+  - gffutils
+  - htseq
+  - scikit-allel
+  - primer3-py
+  - intervaltree
+  - sourmash
+
+  # ── Python: single-cell and spatial ───────────────────────────────────────
+  - scanpy
+  - anndata
+  - mudata
+  - muon
+  - leidenalg
+  - python-igraph
+  - harmonypy
+  - scrublet
+  - scanorama
+  - scikit-misc # scanpy's highly_variable_genes(flavor="seurat_v3")
+  - celltypist
+  - pydeseq2
+  - scvelo
+  # Version floors matter here, not just names. Conda optimises for "a solution",
+  # not "a good solution", so an unpinned spec happily resolves to a 2022 release
+  # that imports symbols modern anndata no longer has — which passes the solve and
+  # then fails at import. squidpy unpinned resolved to 1.2.2 and broke on
+  # `anndata._core.views.SparseCSCView`.
+  #
+  # The upper bound is equally deliberate: squidpy >=1.8 pulls spatialdata, which
+  # requires numpy >=2.0, and cooltools caps numpy <2.0. 1.6.x is the window that
+  # satisfies modern anndata and Hi-C at the same time.
+  - squidpy>=1.6,<1.8
+  # decoupler is NOT here: bioconda's newest is 1.5.0, whose
+  # `np.arange(start=…, dtype=…)` call is rejected by numba >=0.61 (the argument
+  # became positional-only), so it fails at import. No skill in the library
+  # references it. If one ever does, PyPI has fixed versions:
+  #   pip install --user decoupler
+
+  # ── Python: chromatin conformation and regulation ─────────────────────────
+  - cooler
+  - cooltools
+  # pySCENIC is NOT here on purpose. Its only bioconda build (0.12.1) pins
+  # numpy <1.24, while macs3 requires numpy >=1.25 — so the two cannot coexist,
+  # and satisfying pySCENIC would pin the entire image's scientific stack back
+  # to numpy 1.23 for the sake of one package. Install it on demand instead:
+  #   micromamba create -y -p /tmp/scenic -c conda-forge -c bioconda pyscenic
+  # See "Deliberately excluded" in README.md.
+
+  # ── Python: chemistry, systems biology, proteomics ────────────────────────
+  - rdkit # 102 skills (chemoinformatics)
+  - matchms
+  - cobra # cobrapy — metabolic models
+  # pyopenms is NOT here: no version of it can coexist with the rest of this
+  # environment. 3.4+ needs numpy >=2.0 while cooltools caps numpy <2.0; 3.2.0
+  # needs numpy 1.23.* which macs3 (numpy >=1.25) rejects; and 3.3.0 needs
+  # icu >=75.1, which collides with the boost/icu that rdkit's build requires.
+  # cooltools (21 skills) and rdkit (102) outweigh pyopenms (6), so pyopenms is
+  # the one that goes. Install on demand:
+  #   micromamba create -y -p /tmp/openms -c conda-forge -c bioconda pyopenms
+
+  # ── Python: statistics, survival, imaging ─────────────────────────────────
+  - lifelines
+  - scikit-survival
+  - scikit-image
+  - tifffile
+  - imageio
+  - umap-learn
+  - shap
+
+  # ── Python: workflow engines ──────────────────────────────────────────────
+  - snakemake-minimal
+  - nextflow
+
+  # ── R: CRAN (conda-forge) ─────────────────────────────────────────────────
+  - r-ggplot2
+  - r-dplyr
+  - r-tidyr
+  - r-readr
+  - r-stringr
+  - r-purrr
+  - r-tibble
+  - r-data.table
+  - r-matrix
+  - r-mass
+  - r-survival
+  - r-lme4
+  - r-broom
+  - r-metafor
+  - r-pwr
+  - r-hmisc
+  - r-pheatmap
+  - r-rcolorbrewer
+  - r-scales
+  - r-ggrepel
+  - r-patchwork
+  - r-circlize
+  - r-ggseqlogo
+  - r-vegan
+  - r-ape
+  - r-inext
+  - r-knitr
+  - r-rmarkdown
+  - r-optparse
+  - r-jsonlite
+  - r-yaml
+  - r-r.utils
+  - r-writexl
+  - r-rsqlite
+  - r-biocmanager # runtime installs of anything not bundled
+  - r-remotes # TwoSampleMR and friends are GitHub-only
+  - r-devtools
+
+  # ── R: single-cell (CRAN + bioconda) ──────────────────────────────────────
+  - r-seurat
+  - r-signac
+  - r-harmony
+  - r-presto
+  - r-soupx
+
+  # ── R: Mendelian randomisation and fine-mapping ───────────────────────────
+  # TwoSampleMR (26 skills) and MRPRESSO are GitHub-only; see the Dockerfile.
+  - r-coloc
+  - r-susier
+  - r-mendelianrandomization
+  - r-ieugwasr
+
+  # ── R: Bioconductor core (bioconda) ───────────────────────────────────────
+  - bioconductor-biocparallel
+  - bioconductor-biostrings
+  - bioconductor-s4vectors
+  - bioconductor-iranges
+  - bioconductor-genomeinfodb
+  - bioconductor-genomicranges
+  - bioconductor-genomicfeatures
+  - bioconductor-genomicalignments
+  - bioconductor-summarizedexperiment
+  - bioconductor-singlecellexperiment
+  - bioconductor-annotationdbi
+  - bioconductor-rsamtools
+  - bioconductor-rtracklayer
+  - bioconductor-variantannotation
+  - bioconductor-biomart
+
+  # ── R: differential expression and enrichment ─────────────────────────────
+  - bioconductor-deseq2 # 52 skills
+  - bioconductor-edger
+  - bioconductor-limma
+  - bioconductor-apeglm
+  - bioconductor-glmgampoi
+  - bioconductor-sva
+  - bioconductor-tximport
+  - bioconductor-tximeta
+  - bioconductor-clusterprofiler
+  - bioconductor-enrichplot
+  - bioconductor-reactomepa
+  - bioconductor-qvalue
+  - bioconductor-complexheatmap
+  - bioconductor-enhancedvolcano
+  - bioconductor-mfuzz
+
+  # ── R: single-cell, epigenomics, methylation ──────────────────────────────
+  - bioconductor-scater
+  - bioconductor-scran
+  - bioconductor-scuttle
+  - bioconductor-mast
+  - bioconductor-celldex
+  - bioconductor-infercnv
+  - bioconductor-chipseeker
+  - bioconductor-diffbind
+  - bioconductor-motifmatchr
+  - bioconductor-chromvar
+  - bioconductor-tfbstools
+  - bioconductor-jaspar2024
+  # bioconductor-methylkit is NOT here: its current build (1.36.0) requires
+  # r-base >=4.5, so pinning r-base=4.3 forces the 1.28.0 build, which fails to
+  # load at all. Moving to r-base 4.5 would shift the entire Bioconductor
+  # generation (org.Hs.eg.db and friends move in lockstep), which is a much
+  # larger change than one package is worth. minfi and sesame below still cover
+  # array-based methylation; methylKit's niche is bisulfite-seq. On demand:
+  #   Rscript -e 'BiocManager::install("methylKit")'
+  - bioconductor-minfi
+  - bioconductor-sesame
+
+  # ── R: microbiome, flow cytometry, metabolomics ───────────────────────────
+  - bioconductor-dada2
+  - bioconductor-phyloseq
+  - bioconductor-decontam
+  - bioconductor-aldex2
+  - bioconductor-flowcore
+  - bioconductor-flowworkspace
+  - bioconductor-catalyst
+  - bioconductor-xcms
+  - bioconductor-ropls
+
+  # ── R: human reference annotation ─────────────────────────────────────────
+  # Data, not code. Without these, clusterProfiler/ChIPseeker/Signac skills fail
+  # on their first line. ~2 GB; the mouse equivalents are deliberately omitted.
+  - bioconductor-org.hs.eg.db
+  - bioconductor-txdb.hsapiens.ucsc.hg38.knowngene
+  - bioconductor-ensdb.hsapiens.v86
+  - bioconductor-bsgenome.hsapiens.ucsc.hg38
+
+  # ── CLI: alignment and file manipulation ──────────────────────────────────
+  # samtools (692 references) and bcftools (514) dominate every shell block in
+  # the library.
+  - samtools
+  - bcftools
+  - htslib # tabix, bgzip
+  - bedtools
+  - bedops
+  - seqkit
+  - seqtk
+  - csvtk
+  - sambamba
+  - bamtools
+  - gffread
+  - pigz
+  - parallel
+
+  # ── CLI: read QC and trimming ─────────────────────────────────────────────
+  - fastp
+  - cutadapt
+  - fastqc
+  - multiqc
+  - trimmomatic
+  - umi_tools
+  - qualimap
+
+  # ── CLI: aligners and quantifiers ─────────────────────────────────────────
+  - bwa
+  - bwa-mem2
+  - bowtie2
+  - hisat2
+  - minimap2
+  - star
+  - salmon
+  - kallisto
+  - subread # featureCounts
+  - stringtie
+  - rsem
+
+  # ── CLI: variant calling ──────────────────────────────────────────────────
+  - gatk4 # 120 references
+  - picard
+  - freebayes
+  - vcftools
+  - snpeff
+  - plink
+  - plink2
+
+  # ── CLI: peaks, coverage, epigenomics ─────────────────────────────────────
+  - macs3
+  # macs2 is NOT here: its newest build (2.2.9.1) stops at python_abi 3.11,
+  # while macs3/cooltools/rdkit have no cp311 build — so no single Python
+  # satisfies both MACS generations. macs3 is the maintained successor with the
+  # same subcommands, and the Dockerfile installs a `macs2` shim that forwards to
+  # it and says so on stderr, so the ~14 skills that invoke `macs2` by name still
+  # run instead of dying on "command not found".
+  - deeptools
+  - bismark
+  # `idr` is NOT here: its newest build caps at python_abi 3.10, so including it
+  # would hold the whole image back a Python release for one niche peak-
+  # reproducibility tool that the skill library barely references.
+
+  # ── CLI: alignment of sequences, phylogenetics, search ────────────────────
+  - mafft
+  - muscle
+  - clustalo
+  - trimal
+  - iqtree
+  - fasttree
+  - blast
+  - diamond
+  - hmmer
+  - mmseqs2
+
+  # ── CLI: metagenomics and assembly ────────────────────────────────────────
+  - kraken2
+  - bracken
+  - spades
+  - megahit
+  - flye
+  - quast
+  - prodigal
+
+  # ── CLI: data access ──────────────────────────────────────────────────────
+  - sra-tools # prefetch, fasterq-dump
+  - entrez-direct

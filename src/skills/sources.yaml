@@ -1,0 +1,166 @@
+# Skill bundle manifest — the single source of truth for what ships inside the
+# antelope binary.
+#
+# `make skills-bundle` (cmd/skillsbundle) reads this file, walks each upstream
+# submodule under skills/upstream/, and writes a pruned, de-duplicated tree to
+# internal/modules/agent/skillbundle/bundle/. That tree is what //go:embed bakes
+# into release builds and what the agent's skill repository loads at runtime.
+#
+# Editing anything here requires re-running `make skills-bundle`.
+version: 1
+
+# ── What gets copied ─────────────────────────────────────────────────────────
+# Only instructions and runnable scripts. Upstream repos also carry reference
+# datasets, model weights, archives, screenshots and notebooks; none of that
+# belongs in a server image, and dropping it is the difference between a ~300 MB
+# and a ~25 MB bundle.
+include:
+  extensions:
+    - .md # SKILL.md and references/*.md — the actual instructions
+    - .py
+    - .r
+    - .rmd
+    - .sh
+    - .pl
+    - .jl
+    - .sql
+    - .yaml
+    - .yml
+    - .toml
+    - .cfg
+    - .ini
+    - .json # parameters/schemas; large data blobs are caught by max-file-bytes
+    - .txt
+    - .csv # tiny lookup tables only, same size cap applies
+    - .tsv
+    - .nf # Nextflow / CWL / WDL workflow definitions
+    - .cwl
+    - .wdl
+    - .qmd
+
+  # Per-file ceiling. Instructions and scripts are kilobytes; anything above
+  # this is a dataset or a checkpoint that the skill should download at run
+  # time instead. Files over the cap are skipped and reported.
+  max-file-bytes: 262144 # 256 KiB
+
+  # Upstream licence/attribution files copied once per source (not per skill)
+  # into bundle/<source>/. Required for MIT redistribution.
+  license-files: [LICENSE, LICENSE.md, LICENSE.txt, COPYING, NOTICE]
+
+# ── What never gets copied ───────────────────────────────────────────────────
+exclude:
+  # Directory basenames pruned at any depth.
+  dirs:
+    - .git
+    - .github
+    - __pycache__
+    - .ipynb_checkpoints
+    - .pytest_cache
+    - node_modules
+    - venv
+    - .venv
+    - env
+    - dist
+    - build
+    - .egg-info
+    - testdata
+    - test_data
+    - test-data
+    - fixtures
+    - benchmarks
+    - bench_runs
+  # File basenames pruned at any depth.
+  files:
+    - .DS_Store
+    - Thumbs.db
+    - .gitattributes
+    - .gitignore
+
+# ── Skills dropped from every source ─────────────────────────────────────────
+# Glob patterns (path.Match) tested against both the skill name and its path
+# relative to the source root. Rationale per group — tune freely, then re-run
+# the bundler.
+deny:
+  # Installers / meta-skills that teach an agent to manage its own skill
+  # library. Antelope ships the library, so these are noise at best and
+  # actively misleading at worst.
+  - "*-installer"
+  - skill-builder
+  - repro-enforcer
+
+  # Skills whose entire job is to drive an MCP server. Per-user MCP servers are
+  # configured in Settings → MCP and surface as real tools; a skill that shells
+  # out to an MCP endpoint we never provision can only fail.
+  - "*-mcp"
+  - "*-mcp-server"
+  - "mcp-*"
+
+  # Agent-orchestration wrappers that assume the upstream project's own CLI and
+  # directory layout rather than the Antelope workspace.
+  - "*-orchestrator"
+  - clawpathy-autoresearch
+
+  # Third-party SaaS bridges requiring accounts/API keys Antelope does not
+  # provision. Re-enable individually if you wire up the credential.
+  - galaxy-bridge
+  - illumina-bridge
+  - benchling-integration
+  - labstep
+  - protocols-io
+  - turingdb-graph
+
+# ── Upstream sources ─────────────────────────────────────────────────────────
+# `priority` breaks name collisions: the lowest number wins and the duplicate is
+# dropped with a log line. Collisions are common because these libraries vendor
+# each other (openclaw-medical carries ~395 re-packaged bioskills skills).
+sources:
+  - name: bioskills
+    path: skills/upstream/bioskills
+    # Skills live at the repository root, one directory per domain.
+    root: .
+    # First path segment under root is the domain (64 of them: alignment,
+    # variant-calling, single-cell, …).
+    domain-from: path-segment
+    url: https://github.com/GPTomics/bioSkills
+    license: MIT
+    redistribute: true
+    priority: 10
+
+  - name: bioclaw
+    path: skills/upstream/bioclaw
+    root: skills
+    domain-from: path-segment
+    url: https://github.com/zongtingwei/Bioclaw_Skills_Hub
+    license: MIT
+    redistribute: true
+    priority: 20
+
+  - name: clawbio
+    path: skills/upstream/clawbio
+    root: skills
+    # Flat layout; the domain is in the SKILL.md front matter under
+    # metadata.domain, so read it from there and fall back to the source name.
+    domain-from: front-matter
+    url: https://github.com/ClawBio/ClawBio
+    license: MIT
+    redistribute: true
+    priority: 30
+
+  # NOT BUNDLED. The submodule is a pointer, which is a reference and not a
+  # redistribution, so it stays here for provenance and for operators who mount
+  # the tree at run time. But the repository ships no LICENSE file at all, and
+  # 1151 files under skills/ (281 of them SKILL.md) carry an explicit
+  # "All Rights Reserved / proprietary and confidential / unauthorized copying
+  # via any medium is strictly prohibited" notice. Baking that into a
+  # distributed image would be redistribution without a grant.
+  #
+  # Opt in deliberately and at your own risk with:
+  #   make skills-bundle INCLUDE_UNLICENSED=1
+  - name: openclaw-medical
+    path: skills/upstream/openclaw-medical
+    root: skills
+    domain-from: front-matter
+    url: https://github.com/FreedomIntelligence/OpenClaw-Medical-Skills
+    license: UNLICENSED
+    redistribute: false
+    priority: 40

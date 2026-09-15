@@ -1,0 +1,8 @@
+# pnpm settings. As of pnpm 10.x the `pnpm` field in package.json is no longer
+# read; build-script approvals and other settings live here instead.
+# These three transitive deps ship build scripts; approve them so
+# `pnpm install` runs them instead of failing with ERR_PNPM_IGNORED_BUILDS.
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - esbuild
+  - vue-demi

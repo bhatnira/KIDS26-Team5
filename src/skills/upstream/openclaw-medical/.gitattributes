@@ -1,0 +1,11 @@
+# Git LFS tracking removed — see issue #26.
+#
+# Git LFS is disabled for this repository, so the LFS filter rules that
+# were here caused clone/checkout failures:
+#
+#   error: external filter 'git-lfs filter-process' failed
+#   fatal: smudge filter lfs failed
+#
+# All files previously tracked by LFS were already committed as full-size
+# objects (not pointer stubs), so removing the filter rules is safe and
+# allows the repository to clone and check out normally without LFS.

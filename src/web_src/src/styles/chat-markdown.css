@@ -1,0 +1,170 @@
+/* ===========================================================================
+   Chat markdown theming for streamdown-vue (the <StreamMarkdown> renderer,
+   rendered with class "chat-md"). Two jobs:
+     1. Restore KaTeX's own fonts — streamdown applies `font-family … !important`
+        to its descendants, which clobbers KaTeX's per-glyph fonts and makes
+        math fall back to an ugly serif. We re-assert each KaTeX font class with
+        higher specificity + !important.
+     2. Give the output a Claude-like look (typography + dark code blocks).
+   =========================================================================== */
+
+/* ── 1. Math fonts ────────────────────────────────────────────────────────
+   Render math in KaTeX's native Computer-Modern fonts (KaTeX_Main / KaTeX_Math)
+   — the classic LaTeX look used by claude.ai. We do NOT substitute a system
+   serif here: KaTeX positions every glyph using the exact metrics of its own
+   fonts, so swapping in "Times New Roman" (different glyph widths, and usually
+   not even installed on macOS/Linux → generic-serif fallback) breaks spacing
+   and baselines and produces ugly, cramped math.
+
+   These rules only RE-ASSERT KaTeX's own per-glyph fonts so they survive
+   streamdown's `.streamdown-vue span { font-family: inherit }` (and the
+   `p { font-family: inherit !important }`) descendant overrides. font-family/
+   -style/-weight values below mirror katex.css exactly. */
+
+/* Base + upright roman: numbers, operators, parens, \mathrm, \operatorname, \text */
+.chat-md .katex,
+.chat-md .katex .mainrm,
+.chat-md .katex .mathrm,
+.chat-md .katex .textrm {
+  font-family: KaTeX_Main, "Times New Roman", serif !important;
+  font-style: normal !important;
+}
+/* Italic variables: default math letters (\mathnormal uses KaTeX_Math) */
+.chat-md .katex .mathnormal,
+.chat-md .katex .mathdefault {
+  font-family: KaTeX_Math, "Times New Roman", serif !important;
+  font-style: italic !important;
+  font-weight: normal !important;
+}
+/* \mathit — upright-text italic (KaTeX_Main italic, not KaTeX_Math) */
+.chat-md .katex .mathit {
+  font-family: KaTeX_Main, "Times New Roman", serif !important;
+  font-style: italic !important;
+  font-weight: normal !important;
+}
+/* Bold (\mathbf, \textbf) */
+.chat-md .katex .mathbf,
+.chat-md .katex .textbf {
+  font-family: KaTeX_Main, "Times New Roman", serif !important;
+  font-style: normal !important;
+  font-weight: bold !important;
+}
+/* Bold italic (\boldsymbol → KaTeX_Math bold italic) */
+.chat-md .katex .boldsymbol {
+  font-family: KaTeX_Math, "Times New Roman", serif !important;
+  font-style: italic !important;
+  font-weight: bold !important;
+}
+
+/* Special-symbol fonts — re-assert against streamdown's inherit override too. */
+.chat-md .katex .amsrm,
+.chat-md .katex .mathbb,
+.chat-md .katex .textbb { font-family: KaTeX_AMS !important; }
+.chat-md .katex .mathcal { font-family: KaTeX_Caligraphic !important; }
+.chat-md .katex .mathscr,
+.chat-md .katex .textscr { font-family: KaTeX_Script !important; }
+.chat-md .katex .mathfrak,
+.chat-md .katex .textfrak,
+.chat-md .katex .mathboldfrak,
+.chat-md .katex .textboldfrak { font-family: KaTeX_Fraktur !important; }
+.chat-md .katex .mathsf,
+.chat-md .katex .textsf,
+.chat-md .katex .mathboldsf,
+.chat-md .katex .textboldsf,
+.chat-md .katex .mathitsf,
+.chat-md .katex .mathsfit,
+.chat-md .katex .textitsf { font-family: KaTeX_SansSerif !important; }
+.chat-md .katex .mathtt,
+.chat-md .katex .texttt { font-family: KaTeX_Typewriter !important; }
+.chat-md .katex .delimsizing.size1,
+.chat-md .katex .delimsizing.mult .delim-size1 > span,
+.chat-md .katex .op-symbol.small-op { font-family: KaTeX_Size1 !important; }
+.chat-md .katex .delimsizing.size2,
+.chat-md .katex .op-symbol.large-op { font-family: KaTeX_Size2 !important; }
+.chat-md .katex .delimsizing.size3 { font-family: KaTeX_Size3 !important; }
+.chat-md .katex .delimsizing.size4,
+.chat-md .katex .delimsizing.mult .delim-size4 > span { font-family: KaTeX_Size4 !important; }
+
+/* ── 2. Claude-like theme via streamdown's CSS variables ─────────────────── */
+.chat-md {
+  /* Match the surrounding chat typography instead of streamdown's IBM Plex. */
+  --sd-font-family-base: inherit;
+  --sd-font-family-heading: inherit;
+  --sd-font-size-base: 15px;
+  --sd-line-height-base: 1.7;
+  --sd-on-surface: var(--n-text-color, #1f2937);
+  --sd-primary: var(--chat-primary, #18a058);
+  --sd-border-color: var(--n-border-color, rgba(0, 0, 0, 0.1));
+}
+
+/* Headings: a touch tighter than the defaults, Claude-ish scale. */
+.chat-md h1 { font-size: 1.4em; }
+.chat-md h2 { font-size: 1.22em; }
+.chat-md h3 { font-size: 1.08em; }
+.chat-md h4 { font-size: 1em; }
+
+/* Inline code: subtle pill (overrides streamdown's surface-container block). */
+.chat-md :not(pre) > code {
+  background: rgba(127, 127, 127, 0.14) !important;
+  color: inherit !important;
+  border-radius: 5px;
+  padding: 0.12em 0.4em;
+  font-size: 0.88em;
+}
+
+/* Code blocks: rounded card with a header bar — the claude.ai pattern. Chrome
+   colors follow the app's color mode: a light GitHub-light "card" by default
+   (so it's legible in light mode), and the original dark surface under
+   `html.dark` below. The Shiki token colors switch in lock-step via the dual
+   shiki-theme ({light, dark}) set on <StreamMarkdown>; `html.dark` is what both
+   that switch and the override here key off, so chrome and syntax stay in sync.
+   Structural rules (radius, padding, sizing) are shared across both modes. */
+.chat-md [data-streamdown="code-block"] {
+  border-radius: 10px;
+  border: 1px solid #d0d7de;
+  overflow: hidden;
+  margin: 14px 0;
+}
+.chat-md [data-streamdown="code-block-header"] {
+  background: #f6f8fa;
+  color: #656d76;
+  border-bottom: 1px solid #d0d7de;
+  padding: 6px 12px;
+}
+.chat-md [data-streamdown="code-lang"] {
+  color: #656d76;
+  text-transform: lowercase;
+  letter-spacing: 0.03em;
+  font-size: 12px;
+}
+.chat-md [data-streamdown="code-actions"] button { color: #656d76; }
+.chat-md [data-streamdown="code-actions"] button:hover { color: #1f2328; }
+.chat-md [data-streamdown="code-body"],
+.chat-md [data-streamdown="code-body"] pre {
+  background: #ffffff !important;
+}
+.chat-md [data-streamdown="code-body"] pre code {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Dark mode: restore the original dark code-block chrome, unchanged. `html.dark`
+   is set by VueUse's useColorMode and also drives streamdown's switch to the
+   github-dark Shiki tokens, so chrome and highlighting flip together. */
+html.dark .chat-md [data-streamdown="code-block"] { border-color: #30363d; }
+html.dark .chat-md [data-streamdown="code-block-header"] {
+  background: #161b22;
+  color: #8b949e;
+  border-bottom-color: #30363d;
+}
+html.dark .chat-md [data-streamdown="code-lang"] { color: #8b949e; }
+html.dark .chat-md [data-streamdown="code-actions"] button { color: #8b949e; }
+html.dark .chat-md [data-streamdown="code-actions"] button:hover { color: #e6edf3; }
+html.dark .chat-md [data-streamdown="code-body"],
+html.dark .chat-md [data-streamdown="code-body"] pre {
+  background: #0d1117 !important;
+}
+
+/* Links pick up the app's primary color (via --sd-primary above). */
+.chat-md a { text-decoration: none; }
+.chat-md a:hover { text-decoration: underline; }

@@ -1,0 +1,82 @@
+# Structural defaults baked into the docker-compose deployment.
+#
+# This file intentionally carries ONLY non-secret, structural/list values that
+# are awkward to express as environment variables (lists, nested blocks).
+# Everything deployment-specific — hosts, passwords, signing keys, email
+# credentials — is supplied via ANTELOPE_* environment variables in
+# docker-compose.yaml and OVERRIDES the values here (viper env binding).
+#
+# Override priority: ANTELOPE_* env var > this file > built-in defaults.
+
+# jwt: signing keys come from env (ANTELOPE_JWT_ACCESS_SIGNING_KEY /
+# ANTELOPE_JWT_REFRESH_SIGNING_KEY). Only token lifetimes/issuer here.
+jwt:
+  access-expires-time: 24h
+  refresh-expires-time: 168h
+  issuer: antelope
+
+# zap logger. `format`/`encode-level`/`prefix` are auto-selected from
+# system.mode; the rest are honored as-is.
+zap:
+  level: info
+  director: log
+  # show-line adds a `caller` (file:line) field to every entry. It's useful when
+  # developing but just noise in the release deployment's structured logs, so we
+  # leave it off here. Set to true if you need to trace a log back to its source.
+  show-line: false
+  stacktrace-key: stacktrace
+  log-in-console: true
+  max-backups: 7
+  retention-day: 30
+
+# nomad: host/port/token are external and provided via env. These are the
+# pipeline job-registration defaults.
+nomad:
+  namespace: default
+  region: global
+  datacenters:
+    - cab
+  cores: 2
+  memory: 8000
+  nextflow-url: "https://github.com/nextflow-io/nextflow/releases/download/v25.04.8/nextflow-25.04.8-dist"
+
+cors:
+  mode: allow-all
+  whitelist: []
+
+# email: host/port/from/credentials come from env (pointing at maildev).
+# auth-type quoted so YAML does not coerce `none` to a boolean.
+email:
+  nickname: "Antelope"
+  auth-type: "none"
+  tls-policy: "disabled"
+
+# system: mode/port/super-user-password/encrypt-key come from env. super-user is
+# the single bootstrap admin — change it for your deployment (or set
+# ANTELOPE_SYSTEM_SUPER_USER). The at-rest encryption key is supplied via
+# ANTELOPE_SYSTEM_ENCRYPT_KEY (see docker-compose.yaml).
+system:
+  super-user: admin@antelope.dev
+
+# agent (trpc-agent-go) platform-wide defaults. Per-user settings live in the
+# database; these are server-side fallbacks. Paths resolve inside the
+# container (see the volume mounts in docker-compose.yaml).
+agent:
+  app-name: antelope
+  daytona:
+    # Must equal the snapshot registered by scripts/daytona/build-snapshot.sh
+    # (its SNAPSHOT_NAME, default "antelope-bio").
+    default-snapshot: antelope-daytona
+    # Must match the path baked into scripts/daytona/Dockerfile.
+    workspace-path: /home/user/trpc_agent_workspace
+    sandbox-timeout-sec: 600
+    auto-stop-minutes: 30
+    insecure-tls-transfers: false
+  skills:
+    # The image is built with `-tags skills`, so the built-in library is baked
+    # into the binary and unpacked here on first start (hash-gated, so a restart
+    # against a warm filesystem is a no-op). No volume or mount required.
+    bundle-cache-root: /app/skills/bundle
+    user-cache-root: /tmp/antelope-skills
+  artifacts:
+    presigned-ttl-seconds: 3600

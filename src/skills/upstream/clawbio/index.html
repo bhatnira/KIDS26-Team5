@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🦖 ClawBio — Bioinformatics AI Agent Skills</title>
+  <meta name="description" content="ClawBio is where biological AI gets its skills: a curated, reproducible, open repository any agent can call.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ClawBio">
+  <meta property="og:title" content="🦖 ClawBio — Bioinformatics AI Agent Skills">
+  <meta property="og:description" content="ClawBio is where biological AI gets its skills: a curated, reproducible, open repository any agent can call.">
+  <meta property="og:image" content="https://raw.githubusercontent.com/ClawBio/ClawBio/main/img/clawbio-social-preview.png">
+  <meta property="og:url" content="https://clawbio.ai">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@manuelcorpas">
+  <meta name="twitter:title" content="🦖 ClawBio — Bioinformatics AI Agent Skills">
+  <meta name="twitter:description" content="ClawBio is where biological AI gets its skills: a curated, reproducible, open repository any agent can call.">
+  <meta name="twitter:image" content="https://raw.githubusercontent.com/ClawBio/ClawBio/main/img/clawbio-social-preview.png">
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/img/favicon-96.png">
+  <link rel="apple-touch-icon" href="/img/clawbio-logo.jpeg">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d1117;
+      --bg2: #161b22;
+      --bg3: #21262d;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #3fb950;
+      --accent2: #58a6ff;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; line-height: 1.6; }
+    nav { position: sticky; top: 0; z-index: 100; background: rgba(13,17,23,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+    .nav-logo { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; font-size: 1.15rem; text-decoration: none; color: var(--text); }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+    .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+    .hero { text-align: center; padding: 6rem 2rem 5rem; background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(63,185,80,0.12) 0%, transparent 70%); }
+    .hero-badge { display: inline-block; background: rgba(63,185,80,0.15); border: 1px solid rgba(63,185,80,0.4); color: var(--accent); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.3rem 0.9rem; border-radius: 999px; margin-bottom: 1.5rem; }
+    .hero h1 { font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 800; line-height: 1.15; margin-bottom: 1.2rem; letter-spacing: -0.02em; }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+    .hero p { font-size: clamp(1rem, 2vw, 1.25rem); color: var(--text-muted); max-width: 640px; margin: 0 auto 2.5rem; }
+    .hero-ctas { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.65rem 1.4rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: all 0.2s; }
+    .btn-primary { background: var(--accent); color: #0d1117; }
+    .btn-primary:hover { background: #56d364; transform: translateY(-1px); }
+    .btn-secondary { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--bg2); border-color: var(--text-muted); transform: translateY(-1px); }
+    .hero-pills { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem; }
+    .pill { background: var(--bg3); border: 1px solid var(--border); color: var(--text-muted); font-size: 0.8rem; padding: 0.25rem 0.75rem; border-radius: 999px; }
+    section { padding: 5rem 2rem; }
+    .section-inner { max-width: 1000px; margin: 0 auto; }
+    .section-label { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+    .section-title { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 700; margin-bottom: 1rem; }
+    .section-sub { color: var(--text-muted); max-width: 600px; margin-bottom: 3rem; font-size: 1.05rem; }
+    .problem-bg { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+    @media (max-width: 700px) { .problem-grid { grid-template-columns: 1fr; } }
+    .code-block { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; font-family: 'Fira Code', 'Cascadia Code', monospace; font-size: 0.85rem; line-height: 1.7; overflow-x: auto; }
+    .code-block .comment { color: #8b949e; }
+    .code-block .cmd { color: var(--accent2); }
+    .code-block .success { color: var(--accent); font-weight: 600; }
+    .code-block .error { color: #f85149; }
+    .pain-list { list-style: none; margin-top: 1rem; }
+    .pain-list li { padding: 0.5rem 0; border-bottom: 1px solid var(--border); color: var(--text-muted); display: flex; gap: 0.6rem; }
+    .pain-list li:last-child { border-bottom: none; }
+    .pain-list .x { color: #f85149; }
+    .skills-grid { display: grid; gap: 1rem; }
+    .skill-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem 1.5rem; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 1rem; transition: border-color 0.2s; }
+    .skill-card:hover { border-color: var(--accent); }
+    .skill-name { font-weight: 600; font-size: 1rem; margin-bottom: 0.2rem; }
+    .skill-desc { color: var(--text-muted); font-size: 0.9rem; }
+    .skill-badge { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 999px; }
+    .badge-mvp { background: rgba(63,185,80,0.15); color: var(--accent); border: 1px solid rgba(63,185,80,0.4); }
+    .badge-planned { background: rgba(139,148,158,0.15); color: var(--text-muted); border: 1px solid var(--border); }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+    .feature-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; }
+    .feature-icon { font-size: 2rem; margin-bottom: 1rem; }
+    .feature-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 0.5rem; }
+    .feature-desc { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; }
+    .showcase-card { display: grid; grid-template-columns: 120px 1fr; gap: 2rem; align-items: center; background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 2rem; max-width: 800px; margin: 0 auto; }
+    .showcase-avatar { width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--accent); object-fit: cover; }
+    .showcase-name { font-weight: 700; font-size: 1.15rem; margin-bottom: 0.3rem; }
+    .showcase-role { color: var(--accent); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.6rem; }
+    .showcase-desc { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; }
+    .showcase-skills { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.8rem; }
+    .showcase-skill { background: rgba(63,185,80,0.12); border: 1px solid rgba(63,185,80,0.3); color: var(--accent); font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 999px; }
+    @media (max-width: 600px) { .showcase-card { grid-template-columns: 1fr; text-align: center; justify-items: center; } }
+    .community-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+    .community-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; }
+    .cta-section { text-align: center; background: radial-gradient(ellipse 80% 60% at 50% 110%, rgba(63,185,80,0.1) 0%, transparent 70%); border-top: 1px solid var(--border); }
+    .cta-section h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 700; margin-bottom: 1rem; }
+    .cta-section p { color: var(--text-muted); margin-bottom: 2rem; font-size: 1.05rem; }
+    footer { background: var(--bg2); border-top: 1px solid var(--border); padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
+    footer a { color: var(--text-muted); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+    .footer-links { display: flex; gap: 1.5rem; justify-content: center; margin-bottom: 1rem; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="nav-logo" href="#"><span>🦖</span> ClawBio</a>
+    <ul class="nav-links">
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#why">Why ClawBio</a></li>
+      <li><a href="#showcase">Showcase</a></li>
+      <li><a href="#community">Community</a></li>
+      <li><a href="/benchmarks.html" style="color:var(--accent);font-weight:600;">Benchmarks</a></li>
+      <li><a href="#marketplace" style="color:var(--accent);font-weight:600;">Marketplace</a></li>
+      <li><a href="https://docs.clawbio.ai" target="_blank" style="color:var(--accent2);font-weight:600;">Docs</a></li>
+      <li><a href="https://docs.clawbio.ai/research/" target="_blank">Research</a></li>
+      <li><a href="https://github.com/ClawBio/ClawBio" target="_blank">GitHub</a></li>
+    </ul>
+  </nav>
+  <a href="/benchmarks.html" style="display:block;background:linear-gradient(90deg,#238636,#1f6feb);color:#fff;text-align:center;padding:0.7rem 1rem;font-size:0.95rem;font-weight:600;text-decoration:none;">📊 Public Benchmark Leaderboard | 168/182 passing (92.3%) | Up from 80/140 (57.1%) at original audit | Every failure documented &rarr;</a>
+  <section class="hero">
+    <div class="hero-badge">📊 Publicly benchmarked · 1,055 stars · 94 skills · 43 contributors · 4,183 tests</div>
+    <h1>The first <em>bioinformatics-native</em><br>AI agent skill library</h1>
+    <p>ClawBio is where biological AI gets its skills: a curated, reproducible, open repository any agent can call.</p>
+    <div style="max-width:440px;margin:0 auto 2rem;">
+      <div style="background:var(--bg3,#161b22);border:1px solid var(--border);border-radius:8px;padding:0.7rem 1rem;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:1rem;color:var(--accent);text-align:left;white-space:nowrap;overflow-x:auto;">
+        <span style="color:var(--text-muted);user-select:none;">$ </span>pip install clawbio
+      </div>
+      <p style="color:var(--text-muted);font-size:0.82rem;margin:0.6rem 0 0;">🚀 New in v0.5.2: now on <a href="https://pypi.org/project/clawbio/" target="_blank" style="color:var(--accent);">PyPI</a>, plus a <code style="font-size:0.78rem;">conda install -c bioconda clawbio</code> recipe.</p>
+    </div>
+    <div class="hero-ctas">
+      <a class="btn btn-primary" href="https://github.com/ClawBio/ClawBio" target="_blank">⭐ View on GitHub</a>
+      <a class="btn btn-primary" href="/benchmarks.html" style="background:var(--accent2);color:#0d1117;">📊 Leaderboard · 168/182</a>
+      <a class="btn btn-secondary" href="https://github.com/ClawBio/ClawBio/blob/main/CONTRIBUTING.md" target="_blank">🧬 Submit a Skill</a>
+      <a class="btn btn-secondary" href="https://t.me/RoboTerri_bot" target="_blank">🤖 Try RoboTerri</a>
+    </div>
+    <div class="hero-pills">
+      <span class="pill">bioinformatics</span><span class="pill">genomics</span><span class="pill">reproducibility</span><span class="pill">population-genetics</span><span class="pill">equity</span><span class="pill">ai-agents</span><span class="pill">local-first</span><span class="pill">openclaw</span>
+    </div>
+  </section>
+  <section style="padding:3rem 2rem;text-align:center;">
+    <div style="max-width:800px;margin:0 auto;">
+      <video controls preload="metadata" style="width:100%;border-radius:10px;border:1px solid var(--border);" poster="https://raw.githubusercontent.com/ClawBio/ClawBio/main/img/clawbio-social-preview.png">
+        <source src="https://github.com/ClawBio/ClawBio/releases/download/v0.2.0/david-nutrigx-demo.mp4" type="video/mp4">
+      </video>
+      <p style="color:var(--text-muted);font-size:0.85rem;margin-top:0.75rem;">NutriGx Advisor — community-contributed skill running locally on raw genetic data</p>
+    </div>
+  </section>
+  <section class="problem-bg">
+    <div class="section-inner">
+      <div class="section-label">The Problem</div>
+      <div class="section-title">Reproducing bioinformatics analyses is broken</div>
+      <div class="problem-grid">
+        <div>
+          <div class="code-block">
+            <div class="comment"># Without ClawBio</div>
+            <div class="error">$ git clone repo &amp;&amp; cd repo</div>
+            <div class="error"># Wrong Python version...</div>
+            <div class="error"># Reference data link is dead...</div>
+            <div class="error"># Paths hardcoded to /home/jsmith/data/</div>
+            <div class="error"># Email first author. Wait 3 weeks.</div>
+            <div class="error"># Give up.</div>
+          </div>
+          <ul class="pain-list">
+            <li><span class="x">✗</span> Dependency hell &amp; broken environments</li>
+            <li><span class="x">✗</span> Dead links to reference data</li>
+            <li><span class="x">✗</span> Hardcoded paths &amp; missing configs</li>
+            <li><span class="x">✗</span> AI hallucinates star alleles &amp; outdated guidelines</li>
+            <li><span class="x">✗</span> No audit trail, no checksums</li>
+          </ul>
+        </div>
+        <div>
+          <div class="code-block">
+            <div class="comment"># With ClawBio</div>
+            <div class="cmd">$ python skills/multiqc-reporter/multiqc_reporter.py --demo --output /tmp/multiqc_demo</div>
+            <br>
+            <div class="success">✓ Demo report regenerated.</div>
+            <div class="success">✓ Replay command saved alongside outputs.</div>
+            <div class="success">✓ Checksums available for verification.</div>
+            <br>
+            <div class="comment"># Or with natural language:</div>
+            <div class="cmd">$ openclaw &quot;Profile my pharmacogenes&quot;</div>
+          </div>
+          <p style="color:var(--text-muted);font-size:0.9rem;margin-top:1rem;">Many skills write a <code style="background:var(--bg3);padding:0.1rem 0.4rem;border-radius:4px;font-size:0.85rem;">reproducibility/</code> bundle with replay commands, environment metadata, and output checksums. Exact files vary by skill, and some replays still require local tools or original inputs.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="why">
+    <div class="section-inner">
+      <div class="section-label">Why ClawBio</div>
+      <div class="section-title">Domain expertise, frozen into code</div>
+      <p class="section-sub">ChatGPT and Claude are smart generalists. ClawBio skills are domain experts' proven pipelines — executed correctly every time.</p>
+      <div class="features-grid">
+        <div class="feature-card"><div class="feature-icon">🏠</div><div class="feature-title">Local-first by default</div><div class="feature-desc">Your genome is analysed on your machine. Skills that transmit data to external services are clearly labelled and run only when you invoke them.</div></div>
+        <div class="feature-card"><div class="feature-icon">🔁</div><div class="feature-title">Reproducible</div><div class="feature-desc">Many skills export replay bundles with commands, environment metadata, and output checksums so runs can be rechecked without the original agent session.</div></div>
+        <div class="feature-card"><div class="feature-icon">🧩</div><div class="feature-title">Modular</div><div class="feature-desc">Each skill is a self-contained directory (SKILL.md + Python scripts) that plugs into the orchestrator — or runs standalone.</div></div>
+        <div class="feature-card"><div class="feature-icon">⚖️</div><div class="feature-title">MIT Licensed</div><div class="feature-desc">Open-source, free, community-driven. Clone it, run it, build a skill, submit a PR.</div></div>
+        <div class="feature-card"><div class="feature-icon">🌍</div><div class="feature-title">Equity-aware</div><div class="feature-desc">Built-in support for underrepresented populations. HEIM diversity metrics baked into the roadmap.</div></div>
+        <div class="feature-card"><div class="feature-icon">🎯</div><div class="feature-title"><a href="/benchmarks.html" style="color:inherit;text-decoration:none;border-bottom:1px dotted var(--accent2);">Benchmark Validated</a></div><div class="feature-desc">Public scientific-correctness leaderboard: 168/182 tests passing (92.3%), 10 skills audited, every failure tagged. AD ground truth (34 genes, 3 evidence tiers), mock API server for offline CI, swappable fine-mapping (ABF vs SuSiE), benchmark scorer with precision/recall/F1. <a href="/benchmarks.html" style="color:var(--accent2);">View leaderboard</a> · <a href="https://doi.org/10.5281/zenodo.19420648" style="color:var(--accent2);">DOI</a></div></div>
+        <div class="feature-card"><div class="feature-icon">🦞</div><div class="feature-title">Built on OpenClaw</div><div class="feature-desc">Powered by OpenClaw, the open agent platform that routes natural language to the right specialist skill. ClawBio is the bioinformatics catalogue any OpenClaw-compatible agent can call.</div></div>
+        <div class="feature-card"><div class="feature-icon">🔌</div><div class="feature-title">Claude Code Plugin</div><div class="feature-desc">Install with two commands: <code style="background:var(--bg3);padding:0.1rem 0.4rem;border-radius:4px;font-size:0.85rem;">/plugin marketplace add ClawBio/ClawBio</code> then <code style="background:var(--bg3);padding:0.1rem 0.4rem;border-radius:4px;font-size:0.85rem;">/plugin install clawbio</code>. All skills instantly available.</div></div>
+      </div>
+    </div>
+  </section>
+  <section id="skills" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div class="section-inner">
+      <div class="section-label">Skills Library</div>
+      <div class="section-title">94 skills · 88 production-ready · 4,183 tests · 168 / 182 publicly benchmarked passing</div>
+      <p class="section-sub">Each skill includes demo data so you can try it immediately without your own files.</p>
+      <div class="skills-grid">
+        <div class="skill-card"><div><div class="skill-name">💊 PharmGx Reporter</div><div class="skill-desc">Pharmacogenomic report from 23andMe/AncestryDNA: 12 genes, 31 SNPs, 51 drugs, CPIC guidelines.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">🔍 GWAS Lookup</div><div class="skill-desc">Federated variant lookup across 9 genomic databases: GWAS Catalog, Open Targets, PheWeb (UKB, FinnGen, BBJ), GTEx, eQTL Catalogue, and more.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">🔬 scRNA Orchestrator</div><div class="skill-desc">Local Scanpy pipeline for single-cell RNA-seq: QC, doublet detection, clustering, marker discovery, cell-type annotation.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">📊 GWAS Polygenic Risk</div><div class="skill-desc">Calculate polygenic risk scores from DTC genetic data using curated PGS Catalog scores across 6 traits.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">⚖️ Equity Scorer</div><div class="skill-desc">Compute HEIM diversity and equity metrics from VCF or ancestry data: heterozygosity, FST, and population representation scores.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">🦠 Metagenomics Profiler</div><div class="skill-desc">Shotgun metagenomics profiling: taxonomy, resistome, and functional pathways via Kraken2, RGI, and HUMAnN3.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">🧬 Genome Compare</div><div class="skill-desc">Compare your genome to George Church (PGP-1) and estimate ancestry composition via IBS and EM admixture.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">💉 ClinPGx</div><div class="skill-desc">Query the ClinPGx API for pharmacogenomic gene-drug data, CPIC guidelines, clinical annotations, and FDA drug labels.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">🔭 Galaxy Bridge</div><div class="skill-desc">Galaxy tool discovery, intelligent recommendation, and execution: 8,000+ bioinformatics tools from usegalaxy.org with multi-signal scoring and workflow suggestions.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">📈 RNA-seq DE</div><div class="skill-desc">Differential expression for bulk RNA-seq and pseudo-bulk count matrices with QC, PCA, volcano plots, and contrast reporting.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">🏦 UKB Navigator</div><div class="skill-desc">Semantic search across UK Biobank's 12,000+ data fields and publications: find the right variables for your analysis.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">📷 Drug Photo</div><div class="skill-desc">Snap a photo of any medication packaging. ClawBio identifies the drug, queries your pharmacogenomic profile, and returns a personalised dosage card.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">🧫 nf-core scRNA Wrapper</div><div class="skill-desc">Upstream FASTQ to h5ad preprocessing via nf-core/scrnaseq 4.1.0: six alignment presets (simpleaf, STARsolo, kallisto, CellRanger, CellRangerARC, CellRangerMulti) with strict preflight validation and reproducibility bundle.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">🧬 nf-core RNA-seq Wrapper</div><div class="skill-desc">Upstream FASTQ to count matrices via nf-core/rnaseq: STAR/Salmon, STAR/RSEM, HISAT2, and Bowtie2 backends with strict preflight validation and reproducibility bundle.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">🔬 nf-core Sarek Wrapper</div><div class="skill-desc">Upstream FASTQ/BAM/CRAM to annotated VCF via nf-core/sarek 3.8.1: germline, tumour-only, and somatic variant calling with Mutect2, Strelka, HaplotypeCaller, and VEP/snpEff annotation.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">🔬 CRISPR Screen Triage</div><div class="skill-desc">Deterministic CRISPR screen hit ranking from guide-level count tables: fold-change, depletion z-score, and prioritised gene report with reproducibility bundle.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">🧫 Sample QC Triage</div><div class="skill-desc">Multi-sample QC outlier triage for identity, sex, contamination, batch shift, and low complexity: flags rerun candidates with ranked audit report.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">🗺️ Marker Dominance Mapper</div><div class="skill-desc">Marker-based spot region mapping from spatial count data: assigns dominant cell-type labels per spot and generates SVG region maps.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">🌳 Phylogenetics Builder</div><div class="skill-desc">Build maximum-likelihood phylogenetic trees from aligned FASTA data using IQ-TREE 2 with automatic model selection and bootstrap support.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">💊 Drug Repurposing Screen</div><div class="skill-desc">Objective-driven pooled viability screen analysis: QC with robust SSMD, hit calling, context-selectivity classification, confounder-adjusted biomarker sweep, and composite priority scoring for any compound-by-sample bundle.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">🧬 CNV/SV ACMG Classifier</div><div class="skill-desc">ClinGen 2019 / Riggs 2020 dosage sensitivity point framework: five-tier CNV/SV pathogenicity classification with haploinsufficiency and triplosensitivity scoring from VCF or CSV input.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">🧬 polars-bio</div><div class="skill-desc">Fast genomic interval operations on Polars DataFrames: overlap, nearest, merge, coverage, cluster, complement, subtract, count-overlaps, multi-format I/O, DataFusion SQL, and pileup. A scalable bioframe/bedtools alternative.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">🌍 Ancestry-Aware Risk Profiler</div><div class="skill-desc">Infers genetic super-population ancestry from 23andMe/AncestryDNA data and computes ancestry-stratified lifetime disease risk across T2D, CAD, CKD, hypertension, and more using population-specific variant frequencies.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">🔬 TCGA Gene Query</div><div class="skill-desc">Query TCGA tumour biology via the UCSC Xena API: tumour-vs-normal differential expression, gene-gene correlation, survival association, and cancer catalogue browsing across 30+ TCGA cancer types.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+        <div class="skill-card"><div><div class="skill-name">🫀 Organ Aging Studio</div><div class="skill-desc">Interactive Goeminne proteomic aging clock with organ filters and per-protein contribution breakdown: see which plasma proteins drive each organ's predicted age delta across Heart, Brain, Immune, and Organismal clocks.</div></div><span class="skill-badge badge-mvp">MVP</span></div>
+      </div>
+      <p style="color:var(--text-muted);margin-top:1.5rem;font-size:0.95rem;">+ 69 more skills on <a href="https://github.com/ClawBio/ClawBio" target="_blank" style="color:var(--accent);">GitHub</a> · <a href="/benchmarks.html" style="color:var(--accent2);">see which ones are publicly benchmarked &rarr;</a></p>
+    </div>
+  </section>
+  <section id="showcase">
+    <div class="section-inner">
+      <div class="section-label">In Production</div>
+      <div class="section-title">ClawBio skills, running in conversation</div>
+      <p class="section-sub">ClawBio skills aren't just CLI tools — they power live AI agents that talk to real users every day.</p>
+      <div class="showcase-card">
+        <img class="showcase-avatar" src="/img/roboterri-avatar.png" alt="RoboTerri avatar">
+        <div>
+          <div class="showcase-name">RoboTerri</div>
+          <div class="showcase-role">Telegram AI Agent</div>
+          <div class="showcase-desc">A bioinformatics intelligence agent on Telegram — inspired by Professor Teresa K. Attwood, a pioneer of bioinformatics education and research. Run pharmacogenomics reports from your own genetic data. Snap a photo of your medication, get personalised dosage guidance. Local-first, with reproducibility support where the underlying skill writes a replay bundle.</div>
+          <div class="showcase-skills">
+            <span class="showcase-skill">PharmGx Reporter</span>
+            <span class="showcase-skill">Drug Photo Lookup</span>
+            <span class="showcase-skill">NutriGx Advisor</span>
+            <span class="showcase-skill">Genome Compare</span>
+            <span class="showcase-skill">Equity Scorer</span>
+            <span class="showcase-skill">Metagenomics</span>
+            <span class="showcase-skill">GWAS Lookup</span>
+            <span class="showcase-skill">scRNA Orchestrator</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="community">
+    <div class="section-inner">
+      <div class="section-label">Community</div>
+      <div class="section-title">Wanted: skills from the community</div>
+      <p class="section-sub">If you work with genomics, proteomics, metabolomics, imaging, or clinical data — wrap your pipeline as a skill.</p>
+      <div class="community-grid">
+        <div class="community-card"><div class="skill-name">claw-gwas</div><div class="skill-desc">PLINK/REGENIE automation — Statistical genetics</div></div>
+        <div class="community-card"><div class="skill-name">claw-acmg</div><div class="skill-desc">Clinical variant classification — Clinical genomics</div></div>
+        <div class="community-card"><div class="skill-name">claw-pathway</div><div class="skill-desc">GO/KEGG enrichment — Functional genomics</div></div>
+        <div class="community-card"><div class="skill-name">claw-phylogenetics</div><div class="skill-desc">IQ-TREE/RAxML automation — Evolutionary biology</div></div>
+        <div class="community-card"><div class="skill-name">claw-spatial</div><div class="skill-desc">Visium/MERFISH — Spatial transcriptomics</div></div>
+        <div class="community-card"><div class="skill-name">claw-long-reads</div><div class="skill-desc">ONT/PacBio QC and assembly — Long-read sequencing</div></div>
+        <div class="community-card" style="display:flex;align-items:center;justify-content:center;border-style:dashed;"><div style="text-align:center;color:var(--text-muted);"><div style="font-size:1.5rem;margin-bottom:0.4rem;">+</div><div class="skill-name">Your skill here</div></div></div>
+      </div>
+      <div style="margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;">
+        <a class="btn btn-primary" href="https://discord.gg/DHpmptyv" target="_blank">🎮 Join the Discord</a>
+        <a class="btn btn-primary" href="https://t.me/ClawBioContributors" target="_blank">💬 Join the Telegram</a>
+        <a class="btn btn-secondary" href="https://github.com/ClawBio/ClawBio/blob/main/CONTRIBUTING.md" target="_blank">📖 Read the contribution guide</a>
+      </div>
+    </div>
+  </section>
+  <section id="marketplace">
+    <div class="section-inner">
+      <div class="section-label">Ecosystem</div>
+      <div class="section-title">2,100+ skills across 9 repositories</div>
+      <p class="section-sub">Open-source biology skill repos from Stanford, Imperial, and the community.</p>
+      <div style="overflow-x:auto;margin-top:2rem;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+          <thead>
+            <tr style="border-bottom:2px solid var(--border);text-align:left;">
+              <th style="padding:0.6rem 1rem;color:var(--text-muted);font-weight:600;">Repo</th>
+              <th style="padding:0.6rem 1rem;color:var(--text-muted);font-weight:600;text-align:center;">OpenClaw</th>
+              <th style="padding:0.6rem 1rem;color:var(--text-muted);font-weight:600;text-align:right;">Stars</th>
+              <th style="padding:0.6rem 1rem;color:var(--text-muted);font-weight:600;text-align:right;">Forks</th>
+              <th style="padding:0.6rem 1rem;color:var(--text-muted);font-weight:600;text-align:right;">Skills</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border);background:rgba(63,185,80,0.05);"><td style="padding:0.6rem 1rem;"><a href="https://github.com/ClawBio/ClawBio" target="_blank" style="color:var(--accent);">ClawBio</a></td><td style="padding:0.6rem 1rem;text-align:center;color:var(--accent);">&#10003;</td><td style="padding:0.6rem 1rem;text-align:right;">1,055</td><td style="padding:0.6rem 1rem;text-align:right;">230</td><td style="padding:0.6rem 1rem;text-align:right;">94</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.6rem 1rem;"><a href="https://github.com/FreedomIntelligence/OpenClaw-Medical-Skills" target="_blank" style="color:var(--accent2);">OpenClaw-Medical-Skills</a></td><td style="padding:0.6rem 1rem;text-align:center;color:var(--accent);">&#10003;</td><td style="padding:0.6rem 1rem;text-align:right;">1,037</td><td style="padding:0.6rem 1rem;text-align:right;">123</td><td style="padding:0.6rem 1rem;text-align:right;">869</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.6rem 1rem;"><a href="https://github.com/GPTomics/bioSkills" target="_blank" style="color:var(--accent2);">bioSkills</a></td><td style="padding:0.6rem 1rem;text-align:center;color:var(--accent);">&#10003;</td><td style="padding:0.6rem 1rem;text-align:right;">331</td><td style="padding:0.6rem 1rem;text-align:right;">52</td><td style="padding:0.6rem 1rem;text-align:right;">425</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.6rem 1rem;"><a href="https://github.com/wu-yc/LabClaw" target="_blank" style="color:var(--accent2);">LabClaw</a></td><td style="padding:0.6rem 1rem;text-align:center;color:var(--accent);">&#10003;</td><td style="padding:0.6rem 1rem;text-align:right;">317</td><td style="padding:0.6rem 1rem;text-align:right;">54</td><td style="padding:0.6rem 1rem;text-align:right;">211</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.6rem 1rem;"><a href="https://github.com/K-Dense-AI/claude-scientific-skills" target="_blank" style="color:var(--accent2);">claude-scientific-skills</a></td><td style="padding:0.6rem 1rem;text-align:center;color:#d29922;">~</td><td style="padding:0.6rem 1rem;text-align:right;">14.5k</td><td style="padding:0.6rem 1rem;text-align:right;">1,585</td><td style="padding:0.6rem 1rem;text-align:right;">250</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:0.6rem 1rem;"><a href="https://github.com/snap-stanford/Biomni" target="_blank" style="color:var(--accent2);">Biomni</a></td><td style="padding:0.6rem 1rem;text-align:center;color:var(--text-muted);">—</td><td style="padding:0.6rem 1rem;text-align:right;">2,826</td><td style="padding:0.6rem 1rem;text-align:right;">508</td><td style="padding:0.6rem 1rem;text-align:right;">314</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:1.25rem;text-align:center;"><a href="marketplace.html" style="color:var(--accent2);font-size:0.9rem;">View all 9 repos in the full marketplace &rarr;</a></p>
+    </div>
+  </section>
+  <section id="updates" style="border-top:1px solid var(--border);">
+    <div class="section-inner">
+      <div class="section-label">Recent Updates</div>
+      <div class="section-title">Latest from the community</div>
+      <div style="display:grid;gap:0.75rem;max-width:700px;">
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔒</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>clinical-variant-reporter: fail-closed self-audit with hard-abstain.</strong> Adds a self-audit layer that forces a hard abstain whenever the reporter cannot meet its own confidence threshold. The skill refuses to return a verdict rather than emitting a low-confidence call, improving safety for secondary findings in clinical contexts.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #323 · merged · 21 July 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🐛</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>Fix: clinical-variant-reporter crash when VEP returns <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">clin_sig_allele</code> as a string.</strong> Resolves a crash when the VEP REST API returns <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">clin_sig_allele</code> as a plain string instead of a list. The parser now handles both types defensively.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #322 · merged · 21 July 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">⚙️</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>Improvement: skill listing with section headings and total count.</strong> The <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">clawbio list</code> command now groups skills by maturity tier with labelled section headings and prints a total count. Improves agent skill-discovery ergonomics and makes it easier to see which skills are production-ready at a glance. Contributed by @sahandtkod-byte.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #321 · merged · 21 July 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">⚙️</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>Fix: deterministic skills catalogue generation.</strong> Sorts <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">rglob</code> output in <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">generate_catalog.py</code> so <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">skills/catalog.json</code> is byte-identical across Linux, macOS, and Windows regardless of filesystem ordering. Prevents spurious diffs in version control after regeneration. Contributed by @sahandtkod-byte.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #319 · merged · 20 July 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">⚙️</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>Fix: CLI now correctly lists agent-readable skills.</strong> Resolves a bug in the <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">clawbio list</code> command where skills were silently filtered before the agent routing layer, causing valid skills to be omitted from skill-discovery queries. Contributed by @Sanjays2402.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #318 · merged · 20 July 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔧</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>nf-core wrappers: seven replay and portability defects resolved.</strong> Hardens all three nf-core wrappers (scrnaseq 4.1.0, sarek 3.8.1, rnaseq 3.26.0) after end-to-end replay testing. Defects fixed: demo bundles now replay in place via <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">--resume</code>, <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">remap_paths.py</code> combined-flag handling corrected, scrnaseq replay samplesheets updated to the 4.1.0 schema, lane-split sample counting fixed, remote-input guidance clarified, and <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">--allow-remote-inputs</code> surfaced in help. Every fix developed test-first.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #317 · merged · 13 July 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔧</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>nf-core wrappers: reproducible replay, host resource adaptation, and cross-platform portability.</strong> Resolves a series of issues across all three nf-core wrapper skills (rnaseq 3.26.0, sarek 3.8.1, scrnaseq 4.1.0). Key fixes: idempotent in-place replay via <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">--resume</code> detection, atomic self-locating <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">commands.sh</code>, no config-prefix accumulation on re-bundle, and host <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">resourceLimits</code> cap included in the replay bundle. Test suites: rnaseq 495, sarek 389, scrnaseq 437. Contributed by @danilomonge.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #316 · merged · 11 July 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🌍</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>ancestry-risk-profiler</strong> — infers genetic super-population ancestry from a 23andMe/AncestryDNA file and computes ancestry-stratified lifetime disease risk across T2D, CAD, CKD, hypertension, and more. Uses population-specific variant frequencies and ancestry elevation scores to personalise risk estimates. Ships a synthetic South Asian demo patient (~80 SNPs). Contributed by @Jake-BS. Total: 94 skills.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #297 · merged · 8 July 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔬</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>xena-tcga-gene-query</strong> — query TCGA tumour biology through the UCSC Xena API. Supports tumour-vs-normal differential expression, gene-gene correlation, survival association, and cancer catalogue browsing across 30+ TCGA cancer types via ucscxenatoolspy. Contributed by @lishensuo. Total: 93 skills.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #315 · merged · 8 July 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔧</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>nf-core/rnaseq wrapper: reproducibility-bundle LF consistency.</strong> Aligns the rnaseq wrapper's reproducibility bundle to the same LF-only, byte-stable contract used by the sarek and scrnaseq wrappers. Also tightens scrnaseq alignment preset validation. Contributed by @danilomonge.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #314 · merged · 8 July 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🧬</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>polars-bio</strong> (MVP) — fast genomic interval operations on Polars DataFrames: overlap, nearest, merge, coverage, cluster, complement, subtract, and count-overlaps. Multi-format I/O (BED, VCF, GFF, GTF, FASTA, FASTQ, SAM, BAM, BigWig, BigBed, Pairs), DataFusion SQL queries over genomic files, and pileup depth from BAM. A scalable bioframe/bedtools alternative built on polars-bio. Ships all-format demo fixtures and a reproducible fixture generator. Contributed by @mwiewior. Total: 92 skills.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #312 · merged · 7 July 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🧬</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>organ-aging-studio</strong> (MVP) — interpretable Goeminne proteomic clocks for organ-specific aging. Exposes ranked protein contributions and filter controls so reviewers can see which proteins drive each organ's predicted age delta. Ships a demo covering Heart, Brain, Immune, and Organismal clocks with per-organ delta reports, protein contribution tables, and a portable replay bundle. Complements <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">proteomics-clock</code>, which remains the batch prediction path. Contributed by @alinjfz. Total: 91 skills.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #296 · merged · 4 July 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔧</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>nf-core wrapper hardening and ClawBio launcher:</strong> comprehensive fixes across all three nf-core wrappers (rnaseq 3.26.0, sarek 3.8.1, scrnaseq 4.1.0) and the launcher CLI. Unifies option forwarding, output layout, and <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">result.json</code> contract; preserves remote-reference URIs; adds actionable failure diagnostics for memory limits, network errors, macOS Docker <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">/tmp</code>, and config-parse failures; and aligns snake_case flag spellings to nf-core docs. 50 files changed, 2,448 additions. Test suites: rnaseq 469, sarek 365, scrnaseq 412. Contributed by Danilo Monge (@danilomonge).</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #310 · merged · 4 July 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🎯</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>Core skill intent descriptors:</strong> adds <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">INTENTS.json</code> files for PharmGx, GWAS Lookup, GWAS PRS, ClinPGx, Profile Report, fastreer, bioqc, analyze-fasta, phylo, and cnv-acmg. Extends the intent planner with slot extraction for <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">--rsid</code> and <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">--gene</code> arguments, de-duplicates descriptors loaded through registry aliases, and keeps prompt summaries as valid JSON. Adds deterministic route tests. Contributed by @manuelcorpas.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #311 · merged · 30 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🧬</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>cnv-acmg-classifier</strong> (MVP) — ClinGen 2019 / Riggs 2020 dosage sensitivity point framework for five-tier CNV/SV pathogenicity classification. Scores haploinsufficiency and triplosensitivity evidence sections, applies overlap and size modifiers, and produces an ACMG-class verdict per variant. Accepts VCF or CSV input. Contributed by @Babajan-B. Total: 90 skills.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #305 · merged · 28 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔬</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>cell-detection</strong> now supports Zeiss CZI and Nikon ND2 raw microscopy formats. Multichannel 3D stacks are reduced to 2D via max projection before segmentation. Adds <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">czifile</code> and <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">nd2</code> dependencies; tests updated for both new formats. Contributed by @adiezsanchez.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #293 · merged · 28 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🧬</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>celltype-specificity-profiler</strong> — compute how cell-type-specific a gene's expression is from an annotated single-cell atlas. Returns the tau specificity index (Yanai et al. 2005), Sarle's bimodality coefficient, and a ranked list of expressing cell types with per-cluster statistics. A pure analytic transform: consumes annotated output from scrna-embedding and chains into target-validation-scorer and clinical-trial-finder. Supports optional clinical trial success priors from the Virtual Biotech dataset, clearly labelled as correlational. Total: 89 skills.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #307 · merged · 25 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">⚙️</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>Catalog sync:</strong> CLI registry aliases aligned with <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">skills/catalog.json</code>. All <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">clawbio run &lt;alias&gt;</code> commands now resolve correctly to the right skill entry.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #309 · merged · 25 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🌳</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>phylogenetics-builder v0.2.0:</strong> full ML phylogenetic pipeline replacing the stub. Adds 6 aligners (mafft, muscle, clustalw, kalign, tcoffee, prank), trimAl column masking, ModelFinder model selection, IQ-TREE2/RAxML-NG inference, 3 bootstrap modes, outgroup and midpoint rooting, and a 70-test suite. Fixes a wrong primate topology in the prior demo tree and a midpoint-rooting bug in the Bio.Phylo fallback. Demo now ships a 12-taxon 500 bp synthetic primate alignment. Contributed by @ilypopv.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #308 · merged · 23 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔧</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>nf-core wrapper homogenisation:</strong> the three nf-core wrappers (scrnaseq 4.1.0, sarek 3.8.1, rnaseq 3.26.0) aligned to a single consistent architecture with unified validation policy, error handling, exit codes, control-flag surface (<code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">--timeout-hours</code>, <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">--work-dir</code>, <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">--verbose</code>), and staged logging. Fixes cross-skill module shadowing that broke combined pytest sessions. 1,168 combined tests passing. Contributed by Danilo Monge (@danilomonge).</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #304 · merged · 23 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔬</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>Fix: clinical-variant-reporter uses versioned Ensembl transcript accessions.</strong> VEP REST API calls now include version suffixes (e.g. <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">ENST00000357654.9</code>) per HGVS v21.1. Demo evidence cache updated with current Ensembl versions. 37 tests passing. Contributed by Cam Lloyd (@camlloyd).</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #302 · merged · 23 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔒</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>Fix: regenerate uv.lock and add lockfile-check CI job.</strong> Regenerates the uv lockfile to match current dependencies and adds a dedicated <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">lockfile-check</code> CI job that fails fast if the lockfile drifts from <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">pyproject.toml</code>. Prevents broken installs reaching contributors. Contributed by Cam Lloyd (@camlloyd).</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #301 · merged · 21 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🐛</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>Fix: correct statistical and biological errors in four analysis skills.</strong> Resolves inaccuracies in statistical computations and biological interpretations across four skills, ensuring outputs are scientifically correct and match established methodology. All affected skill test suites updated to catch regressions.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #300 · merged · 20 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔧</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>Refactor: skill linting migrated to <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">agentskills validate</code>.</strong> Skill-level SKILL.md conformance checks are now driven by the <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">agentskills validate</code> command, replacing the bespoke linting script. Produces cleaner CI output, improves error messages, and aligns with the broader AgentSkills toolchain used across the catalogue.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #299 · merged · 20 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔧</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>Fix: nf-core wrapper test harness after the clawbio CLI package split.</strong> Corrects test imports and execution paths for both <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">nfcore-sarek-wrapper</code> and <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">nfcore-scrnaseq-wrapper</code> following the <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">clawbio</code> CLI package split. All wrapper tests now pass without a pre-set <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">PYTHONPATH</code>.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #295 · merged · 19 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔬</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>nfcore-sarek-wrapper</strong> and <strong>nfcore-scrnaseq-wrapper</strong> audited and production-hardened. All parameters, enums, samplesheet rules, version pins, and defaults re-derived from the official nf-core schemas (sarek 3.8.1, scrnaseq 4.1.0). Reproducibility bundles are now self-contained and byte-stable across Linux, macOS, and Windows/WSL: self-anchoring <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">commands.sh</code>, forced LF line endings, and a bundled <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">remap_paths.py</code> for cross-machine replay. Direct invocation without pre-set <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">PYTHONPATH</code> now works for both wrappers.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #292 · merged · 14 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔧</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>nutrigx</strong> skill renamed from <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">nutrigx-advisor</code> to <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">nutrigx</code>, with pip install fix: the <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">clawbio run nutrigx</code> alias now resolves correctly after a pip install. No skill logic changes.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #290 · merged · 14 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">⚙️</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>CLI improvement:</strong> <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">clawbio --version</code> now works, printing the installed package version. Useful for bug reports and reproducibility records.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #291 · merged · 14 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🧬</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>nfcore-rnaseq-wrapper</strong> audited and hardened for nf-core/rnaseq 3.26.0. All CLI flags, enums, defaults, types, and numeric bounds now match <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">nextflow_schema.json</code> and <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">assets/schema_input.json</code>. Fixes include odd-integer guard for <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">--pseudo-aligner-kmer-size</code> and correct <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">--gtf</code> + <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">--gff</code> precedence handling. No other skills touched.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #289 · merged · 11 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🧫</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>nfcore-scrnaseq-wrapper</strong> upgraded to nf-core/scrnaseq 4.1.0 — production alignment and audit hardening. Now supports six alignment presets (simpleaf, STARsolo, kallisto, CellRanger, CellRangerARC, CellRangerMulti), hermetic demo mode, stricter preflight validation, and improved macOS/Apple-Silicon Docker support. Contributed by Danilo Monge (@danilomonge). 385 skill tests, all green.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #286 · merged · 8 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">💊</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>drug-repurposing-screen</strong> (MVP) — objective-driven pooled viability screen analysis. QC with robust SSMD, hit calling, context-selectivity classification, confounder-adjusted biomarker sweep, and composite priority scoring. Generalises the validated PRISM repurposing workflow via schema and objective YAML files so any compound-by-sample bundle can plug in. Ships an offline toy demo (10 samples x 20 compounds, 3 selective hits). Contributed by @RezaJF. Total: 88 skills, 29 production-ready.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #285 · merged · 8 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🌳</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>phylogenetics-builder</strong> (MVP) — maximum-likelihood phylogenetic trees from aligned FASTA data using IQ-TREE 2. Automatic model selection via ModelFinder, ultrafast bootstrap support, and a proportional SVG phylogram. Chains with fastreer for distance-matrix workflows and genome-compare for population-level tree building. Contributed by @Babajan-B. Total: 87 skills, 29 production-ready.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #284 · merged · 6 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔬</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>pathway-enricher</strong> — gene-set pathway enrichment analysis using Enrichr. Queries KEGG, GO (BP/MF/CC), Reactome, WikiPathways, and GWAS Catalog gene sets from any ranked gene list. Returns per-database tables, adjusted p-values, and an HTML summary report. Chains with rnaseq-de, crispr-screen-triage, and proteomics-de for downstream enrichment of DE results. Contributed by @Babajan-B.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #280 · merged · 6 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🧰</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>bioqc-mcp</strong> (MVP) — FastQC and MultiQC wrapper with rich visualisations. Runs per-sample FastQC, aggregates results via MultiQC, and generates an annotated HTML report with per-metric quality flags. Chains with seq-wrangler and multiqc-reporter for full upstream QC workflows. Contributed by @Babajan-B. Total: 85 skills, 28 production-ready.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #279 · merged · 5 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔒</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>CI security: persist-credentials removed from checkout steps.</strong> Adds <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">persist-credentials: false</code> to all <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">actions/checkout</code> steps in <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">ci.yml</code>, resolving the <em>artipacked</em> warning from zizmor (credential persistence through workflow artifacts). Contributed by Cam Lloyd (@camlloyd).</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #283 · merged · 4 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">📝</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>Docs: gi-skills authentication consolidated.</strong> Consolidates GI authentication instructions into a single canonical Authentication section per skill, replacing scattered opt-in callouts, Workflow bullet points, and inconsistent stubs. Also removes stale "hackathon fallback" wording from Workflow steps and the <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">gi_runner.py --help</code> string. Affects all six hosted-inference skills: gi-promoter, gi-splice, gi-enhancer, gi-chromatin, gi-expression, gi-annotation. Contributed by @boldakov.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #282 · merged · 4 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔧</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>Fix: gi-skills strand and locus corrections.</strong> The bundled example FASTAs for the six Genomic Intelligence skills (<strong>gi-promoter</strong>, <strong>gi-splice</strong>, <strong>gi-enhancer</strong>, <strong>gi-chromatin</strong>, <strong>gi-expression</strong>, <strong>gi-annotation</strong>) had incorrect strand orientation and locus coordinates in their demo data. This fix corrects the reference sequences and locus annotations, ensuring demo outputs match expected model behaviour and ground-truth annotations.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #281 · merged · 3 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🧬</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>nfcore-sarek-wrapper</strong> (MVP) — upstream variant calling via nf-core/sarek 3.8.1 for germline, tumour-only, and somatic paired analysis. Covers mapping through annotation with 20 callers (Mutect2, Strelka, HaplotypeCaller, DeepVariant, FreeBayes, Manta, ASCAT, CNVkit, and more) and 5 annotators (VEP, snpEff, bcfann, merge, snpSift). Step-aware restart, all 4 backends (docker/singularity/apptainer/podman), a portable reproducibility bundle, and 291 tests. Contributed by Danilo Monge (@danilomonge). Total: 84 skills, 28 production-ready.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #276 · merged · 2 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🧬</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">Six new skills: <strong>gi-promoter</strong>, <strong>gi-splice</strong>, <strong>gi-enhancer</strong>, <strong>gi-chromatin</strong>, <strong>gi-expression</strong>, and <strong>gi-annotation</strong> — Genomic Intelligence DNA language model inference. Each skill wraps a transformer-based endpoint on the Genomic Intelligence platform for promoter detection, splice site prediction, enhancer activity, chromatin state across 919 tracks, tissue-level expression, and de novo gene structure annotation from raw DNA sequences. Contributed by @boldakov. A shared hackathon API key ships in <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">.env.example</code> for evaluation use.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #260 · merged · 2 June 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">📊</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>locuscompare-region-render</strong> — a 4-panel regional colocalisation diagnostic. Renders overlapping GWAS Manhattan, QTL Manhattan, GENCODE gene track, and a cross-trait scatter coloured by LD r&#178; for any lead variant and pair of exposure/outcome studies. Follows the Liu 2019 LocusCompare convention; chains with gwas-catalog-region-fetch, ld-1000g-region-compute, eqtl-catalogue-region-fetch, and ukb-ppp-region-fetch for full locus-level colocalisation workflows. Total: 77 skills.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #272 · merged · 30 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔍</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>New validation tool: LLM plan vs ClawBio rules divergence detector.</strong> Surfaces discrepancies between an LLM's proposed analysis plan and the rules encoded in SKILL.md specifications. Flags when an agent tries to improvise parameters, swap tools, or skip mandatory steps that the skill contract forbids. Helps maintainers and contributors catch spec drift before it reaches production.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #269 · merged · 30 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔒</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>CI security hardening: all GitHub Actions pinned to commit SHAs.</strong> Every Actions step in the ClawBio CI pipeline is now pinned to an immutable commit SHA rather than a mutable version tag. This eliminates a class of supply chain attack where a compromised upstream action tag could be redirected to malicious code without changing the tag reference.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #274 · merged · 30 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">❓</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>New FAQ section added to docs.</strong> Covers common questions about skill installation, demo mode, contributing new skills, reproducibility bundle contents, and how ClawBio relates to other agent frameworks. Reduces friction for first-time contributors and users arriving from search.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #275 · merged · 30 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔐</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>Supply chain hardening</strong> by Cam Lloyd (@camlloyd): a 7-day <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">exclude-newer</code> cutoff has been added to the <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">uv</code> lockfile configuration to mitigate supply chain attacks by capping newly published package versions entering the build.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #271 · merged · 27 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">📚</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>Messenger adapter tutorial improved</strong> by Steffen Möller (@smoe): the tutorial for the messenger adapter has been revised and expanded, making it easier for contributors to wire new messaging backends (Telegram, Discord, etc.) into the ClawBio agent dispatch layer.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #267 · merged · 27 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🧬</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>DnaSP skill updated</strong> by Dr David de Lorenzo (@drdaviddelorenzo): the <strong>dnasp</strong> population-genetics skill received a maintenance update, keeping its 16 nucleotide-diversity analyses (Pi, Theta-W, Tajima's D, Ka/Ks, McDonald-Kreitman, Fst, SFS, and more) current with the latest FASTA/NEXUS parsing fixes and test coverage improvements.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #266 · merged · 24 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🗂️</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;"><strong>SKILL.md frontmatter migration</strong>: all 55 SKILL.md files migrated to the AgentSkills layout spec, standardising YAML frontmatter across the full skills catalogue. No logic changes; enables downstream tooling (agentskills validate, catalog generation, and marketplace indexing) to work uniformly across every skill.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #201 · merged · 24 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🧬</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>nfcore-rnaseq-wrapper</strong> (MVP) — upstream bulk RNA-seq preprocessing via nf-core/rnaseq. Accepts FASTQ or BAM inputs and produces count matrices ready for the RNA-seq DE skill. Supports STAR/Salmon, STAR/RSEM, HISAT2, and Bowtie2 aligner backends with strict preflight validation and a reproducibility bundle. Contributed by Danilo Monge (@danilomonge). Total: 76 skills, 27 production-ready.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #250 · merged · 24 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🧬</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>busco-assessor</strong> — genome, transcriptome, and protein completeness assessment via BUSCO v6. Supports automatic lineage routing via NCBI taxonomy, genome/transcriptome/protein modes, and generates a full Markdown report with BUSCO scores (C/S/D/F/M) and reproducibility bundle. Total: 76 skills.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #211 · merged · 24 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">📥</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>article-data-fetcher</strong> (MVP) — download genomics data files from GEO, ENA, Zenodo, Dryad and more given an article DOI, PMID, or PMCID. Find, fetch, and stage raw data files for any published genomics study. Contributed by Andreia Rodrigues (@andreiarog).</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #194 · merged · 23 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🗺️</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>marker-dominance-mapper</strong> (MVP) — deterministic marker-based spot region mapping from spatial count CSVs. Assigns the dominant cell-type label per spot, generates an SVG region map, and writes a reproducibility bundle. Ideal for annotating tumour core, immune edge, and stromal zones in spatial transcriptomics data.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #254 · merged · 23 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔬</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>crispr-screen-triage</strong> (MVP) — deterministic CRISPR screen hit ranking from guide-level count tables. Computes fold-change and depletion z-score per guide, aggregates to gene level, and outputs a prioritised hit report with a reproducibility bundle. Accepts any pooled knockout screen count matrix as input.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #253 · merged · 23 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🧫</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>sample-qc-triage</strong> (MVP) — deterministic multi-sample QC outlier detection for sequencing runs. Flags samples with sex mismatches, identity discordance, contamination signals, batch shifts, or low-complexity issues; outputs a ranked audit report with rerun candidates highlighted and a reproducibility bundle.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #252 · merged · 23 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔬</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skills: <strong>gwas-catalog-region-fetch</strong>, <strong>ld-1000g-region-compute</strong>, and <strong>ukb-ppp-region-fetch</strong> (all MVP) — regional GWAS Catalog tabix fetcher, on-demand LD r2 computation via plink 1.9 against 1000 Genomes phase 3, and UKB-PPP plasma pQTL regional fetcher. These three locus-level utilities chain with gwas-lookup and fine-mapping for co-localisation workflows. Contributed by Madar Aviv (@madaraviv).</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PRs #257, #258, #259 · merged · 23 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">📦</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">Build system migrated to <strong>uv + pyproject.toml</strong>: dependency resolution is now fully reproducible via <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">uv.lock</code>, installs are faster with <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">uv sync</code>, and ClawBio is now structured as a proper Python package for the importable <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">clawbio</code> library. Contributed by Romain Studer.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #239 · merged · 19 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔬</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>claw-methylation-cycle</strong> — methylation cycle analysis from raw SNP genotype data (23andMe, AncestryDNA, Adntro). Produces enzymatic activity profiles, Net Methylation Capacity (NMC), BH4 axis estimates, compound heterozygosity detection, and clinician-review findings for MTHFR, COMT, CBS, and related genes. Contributed by Samuel Carmona Aguirre. Total: 67 skills.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #133 · merged · 19 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔭</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">OpenTelemetry audit module: <strong>shared OTel provenance spans</strong> added via <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">clawbio/common/audit.py</code>. Any skill can now wrap its invocation in a root span (skill name, version, input file, checksum, output dir) and child spans for external tool and API calls, giving end-to-end provenance tracing and machine-readable audit trails compatible with OpenTelemetry collectors.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #242 · merged · 18 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🌳</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>fastreer</strong> — phylogenetic distance matrices and trees from VCF or FASTA data using the fastreeR hybrid Java/Python toolkit. Supports VCF2TREE, VCF2DIST, FASTA2DIST, and DIST2TREE commands with k-mer and variant-based distance metrics. Chains with equity-scorer and variant-annotation for population-level analyses. Total: 67 skills.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #249 · merged · 15 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🧫</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>nfcore-scrnaseq-wrapper</strong> (MVP) — upstream FASTQ to h5ad preprocessing via nf-core/scrnaseq. Accepts paired FASTQs from 10x Chromium experiments and outputs AnnData h5ad files ready for the scRNA Orchestrator. Supports STARsolo, alevin-fry (simpleaf), and kallisto/bustools aligner backends with strict preflight validation and a reproducibility bundle. Contributed by Danilo Monge (@danilomonge). Total: 67 skills, 23 production-ready.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #219 · merged · 14 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔬</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>eqtl-catalogue-region-fetch</strong> — region tabix fetcher for EBI eQTL Catalogue v7+. Fetches cis-eQTL summary statistics for any genomic region without downloading full datasets, with support for study and tissue filters. Contributed by Madar Aviv (@madaraviv). Chains with gwas-lookup and fine-mapping for locus-level co-localisation workflows.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #236 · merged · 14 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">📦</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">Proteomics-DE and omics-target-evidence-mapper: RO-Crate provenance metadata (W3C JSON-LD standard for reproducible research objects) added to both skills, alongside migration to shared reproducibility helpers. Every analysis now generates a machine-readable Research Object Crate. Contributed by Cam Lloyd (@camlloyd).</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PRs #246, #247 · merged · 14 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔧</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">Skill execution refactor: routing now reads from per-skill <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">intent.json</code> descriptors. Separates descriptor discovery (symlink-following) from execution root (registry-anchored), so externally-symlinked skills like GENtle resolve to the correct ClawBio checkout. Adds path-traversal hardening, descriptor-validation gates (<code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">status=&quot;needs_registration&quot;</code>), demo-mode guard fixes, and ~960 lines of new regression tests. Contributed by Steffen Möller (@smoe).</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #208 · 9 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🧬</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">New skill: <strong>dnasp</strong> — Python reimplementation of DnaSP 6 for population genetics. 16 analyses: nucleotide diversity (Pi, Theta-W, Theta-L), Tajima's D, Fu &amp; Li D*/F*, Ka/Ks, McDonald-Kreitman, Fst, site frequency spectrum, codon usage bias, and more. Accepts FASTA or NEXUS input; 355 tests. Contributed by Dr David de Lorenzo (@drdaviddelorenzo). Total: 67 skills, 23 production-ready.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #238 · 8 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🧬</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">Four new skills: <strong>analyze-fasta</strong> (MVP, single-FASTA nucleotide/protein analyser: GC%, ORFs, MW, pI, GRAVY), <strong>rare-disease-rnaseq</strong> (blood RNA-seq expression-outlier detection for rare-disease diagnosis), <strong>wgs-prs</strong> (end-to-end WGS to polygenic risk score pipeline), and <strong>clawpathy-autoresearch</strong> (eval-driven iterative skill-tuning loop).</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PRs #233, #234, #212, #192 · 8 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔁</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">Reproducibility module: W3C RO-Crate provenance metadata is now built into the shared reproducibility helper. Every skill that calls <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">write_ro_crate()</code> generates a machine-readable Research Object Crate (JSON-LD) alongside the standard <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">commands.sh</code> and <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">checksums.sha256</code>.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #112 · 8 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🤖</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">CI benchmark automation: the public leaderboard now self-updates. A GitHub Actions workflow runs <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">clawbio_bench --smoke</code> weekly and opens a PR with the updated scores. Fine-mapping is now included at 19/20 (95.0%). Total: <a href="/benchmarks.html" style="color:var(--accent2);">168 / 182 passing (92.3%)</a>.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PRs #217, #218 · 3 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">📊</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">Public benchmark leaderboard: ClawBio publishes per-skill scientific-correctness scores at <a href="/benchmarks.html" style="color:var(--accent2);">clawbio.ai/benchmarks</a>. Latest run via <a href="https://github.com/biostochastics/clawbio_bench" target="_blank" style="color:var(--accent2);">clawbio_bench v0.1.5</a>: 168 / 182 (92.3%), up from 80 / 140 (57.1%) at the original audit baseline. Equity-scorer 20 to 100, pharmgx 42 to 98, bio-orchestrator 76 to 98.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PRs #213, #215 · 3 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">🔁</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">Portable reproducibility bundles: skills that use the shared helpers now write a <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">commands.sh</code> with anchor-relative replay and path handling to reduce checkout friction. Replays still depend on the skill, the local toolchain, and the required inputs being available.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #146 · 3 May 2026</div>
+          </div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:1.5rem;flex-shrink:0;">📦</span>
+          <div>
+            <div style="font-weight:600;font-size:0.95rem;">Importable package API: ClawBio is now usable as a Python library via <code style="background:var(--bg3);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem;">from clawbio import run_skill, list_skills</code>, in addition to the CLI. Clean public API surface for programmatic use.</div>
+            <div style="color:var(--text-muted);font-size:0.85rem;margin-top:0.15rem;">PR #210 · 28 April 2026</div>
+          </div>
+        </div>
+      </div>
+      <p style="margin-top:1.25rem;"><a href="https://github.com/ClawBio/ClawBio/pulls?q=is%3Apr+is%3Amerged" target="_blank" style="color:var(--accent2);font-size:0.9rem;">View all merged pull requests on GitHub &rarr;</a></p>
+    </div>
+  </section>
+  <section id="contributors" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div class="section-inner" style="text-align:center;">
+      <div class="section-title">Built in the open by a global community</div>
+      <p style="color:var(--text-muted);max-width:660px;margin:0 auto 2.5rem;">More than 40 contributors from labs around the world have shipped skills, fixes, and benchmarks into ClawBio. Every skill is a piece of someone's domain expertise, frozen into reproducible code that any agent can call.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:1.4rem;justify-content:center;max-width:900px;margin:0 auto;">
+        <a href="https://github.com/camlloyd" target="_blank" title="Cameron Lloyd" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;width:84px;">
+          <img src="https://github.com/camlloyd.png?size=128" alt="Cameron Lloyd" width="64" height="64" loading="lazy" style="border-radius:50%;border:1px solid var(--border);background:var(--bg2);">
+          <span style="font-size:0.72rem;color:var(--text-muted);margin-top:0.45rem;line-height:1.2;">Cameron Lloyd</span>
+        </a>
+        <a href="https://github.com/jaymoore-research" target="_blank" title="Jay Moore" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;width:84px;">
+          <img src="https://github.com/jaymoore-research.png?size=128" alt="Jay Moore" width="64" height="64" loading="lazy" style="border-radius:50%;border:1px solid var(--border);background:var(--bg2);">
+          <span style="font-size:0.72rem;color:var(--text-muted);margin-top:0.45rem;line-height:1.2;">Jay Moore</span>
+        </a>
+        <a href="https://github.com/YonghaoZhao722" target="_blank" title="Yonghao Zhao" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;width:84px;">
+          <img src="https://github.com/YonghaoZhao722.png?size=128" alt="Yonghao Zhao" width="64" height="64" loading="lazy" style="border-radius:50%;border:1px solid var(--border);background:var(--bg2);">
+          <span style="font-size:0.72rem;color:var(--text-muted);margin-top:0.45rem;line-height:1.2;">Yonghao Zhao</span>
+        </a>
+        <a href="https://github.com/smoe" target="_blank" title="Steffen Möller" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;width:84px;">
+          <img src="https://github.com/smoe.png?size=128" alt="Steffen Möller" width="64" height="64" loading="lazy" style="border-radius:50%;border:1px solid var(--border);background:var(--bg2);">
+          <span style="font-size:0.72rem;color:var(--text-muted);margin-top:0.45rem;line-height:1.2;">Steffen Möller</span>
+        </a>
+        <a href="https://github.com/danilomonge" target="_blank" title="Danilo Monge" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;width:84px;">
+          <img src="https://github.com/danilomonge.png?size=128" alt="Danilo Monge" width="64" height="64" loading="lazy" style="border-radius:50%;border:1px solid var(--border);background:var(--bg2);">
+          <span style="font-size:0.72rem;color:var(--text-muted);margin-top:0.45rem;line-height:1.2;">Danilo Monge</span>
+        </a>
+        <a href="https://github.com/drdaviddelorenzo" target="_blank" title="David de Lorenzo" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;width:84px;">
+          <img src="https://github.com/drdaviddelorenzo.png?size=128" alt="David de Lorenzo" width="64" height="64" loading="lazy" style="border-radius:50%;border:1px solid var(--border);background:var(--bg2);">
+          <span style="font-size:0.72rem;color:var(--text-muted);margin-top:0.45rem;line-height:1.2;">David de Lorenzo</span>
+        </a>
+        <a href="https://github.com/dalloliogm" target="_blank" title="Giovanni Dall'Olio" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;width:84px;">
+          <img src="https://github.com/dalloliogm.png?size=128" alt="Giovanni Dall'Olio" width="64" height="64" loading="lazy" style="border-radius:50%;border:1px solid var(--border);background:var(--bg2);">
+          <span style="font-size:0.72rem;color:var(--text-muted);margin-top:0.45rem;line-height:1.2;">Giovanni Dall'Olio</span>
+        </a>
+        <a href="https://github.com/sooraj-codes" target="_blank" title="Sooraj" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;width:84px;">
+          <img src="https://github.com/sooraj-codes.png?size=128" alt="Sooraj" width="64" height="64" loading="lazy" style="border-radius:50%;border:1px solid var(--border);background:var(--bg2);">
+          <span style="font-size:0.72rem;color:var(--text-muted);margin-top:0.45rem;line-height:1.2;">Sooraj</span>
+        </a>
+        <a href="https://github.com/Babajan-B" target="_blank" title="Babajan Banaganapalli" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;width:84px;">
+          <img src="https://github.com/Babajan-B.png?size=128" alt="Babajan Banaganapalli" width="64" height="64" loading="lazy" style="border-radius:50%;border:1px solid var(--border);background:var(--bg2);">
+          <span style="font-size:0.72rem;color:var(--text-muted);margin-top:0.45rem;line-height:1.2;">Babajan Banaganapalli</span>
+        </a>
+        <a href="https://github.com/RezaJF" target="_blank" title="Reza Jabal" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;width:84px;">
+          <img src="https://github.com/RezaJF.png?size=128" alt="Reza Jabal" width="64" height="64" loading="lazy" style="border-radius:50%;border:1px solid var(--border);background:var(--bg2);">
+          <span style="font-size:0.72rem;color:var(--text-muted);margin-top:0.45rem;line-height:1.2;">Reza Jabal</span>
+        </a>
+        <a href="https://github.com/alexharston" target="_blank" title="Alex Harston" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;width:84px;">
+          <img src="https://github.com/alexharston.png?size=128" alt="Alex Harston" width="64" height="64" loading="lazy" style="border-radius:50%;border:1px solid var(--border);background:var(--bg2);">
+          <span style="font-size:0.72rem;color:var(--text-muted);margin-top:0.45rem;line-height:1.2;">Alex Harston</span>
+        </a>
+        <a href="https://github.com/boldakov" target="_blank" title="Alexander Boldakov" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;width:84px;">
+          <img src="https://github.com/boldakov.png?size=128" alt="Alexander Boldakov" width="64" height="64" loading="lazy" style="border-radius:50%;border:1px solid var(--border);background:var(--bg2);">
+          <span style="font-size:0.72rem;color:var(--text-muted);margin-top:0.45rem;line-height:1.2;">Alexander Boldakov</span>
+        </a>
+        <a href="https://github.com/romainstuder" target="_blank" title="romainstuder" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;width:84px;">
+          <img src="https://github.com/romainstuder.png?size=128" alt="romainstuder" width="64" height="64" loading="lazy" style="border-radius:50%;border:1px solid var(--border);background:var(--bg2);">
+          <span style="font-size:0.72rem;color:var(--text-muted);margin-top:0.45rem;line-height:1.2;">romainstuder</span>
+        </a>
+        <a href="https://github.com/madaraviv" target="_blank" title="madaraviv" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;width:84px;">
+          <img src="https://github.com/madaraviv.png?size=128" alt="madaraviv" width="64" height="64" loading="lazy" style="border-radius:50%;border:1px solid var(--border);background:var(--bg2);">
+          <span style="font-size:0.72rem;color:var(--text-muted);margin-top:0.45rem;line-height:1.2;">madaraviv</span>
+        </a>
+        <a href="https://github.com/clinicaerus" target="_blank" title="UNIMED Consulting" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;width:84px;">
+          <img src="https://github.com/clinicaerus.png?size=128" alt="UNIMED Consulting" width="64" height="64" loading="lazy" style="border-radius:50%;border:1px solid var(--border);background:var(--bg2);">
+          <span style="font-size:0.72rem;color:var(--text-muted);margin-top:0.45rem;line-height:1.2;">UNIMED Consulting</span>
+        </a>
+        <a href="https://github.com/familygenome" target="_blank" title="familygenome" style="text-decoration:none;display:flex;flex-direction:column;align-items:center;width:84px;">
+          <img src="https://github.com/familygenome.png?size=128" alt="familygenome" width="64" height="64" loading="lazy" style="border-radius:50%;border:1px solid var(--border);background:var(--bg2);">
+          <span style="font-size:0.72rem;color:var(--text-muted);margin-top:0.45rem;line-height:1.2;">familygenome</span>
+        </a>
+      </div>
+      <div class="hero-ctas" style="margin-top:2.8rem;">
+        <a class="btn btn-secondary" href="https://github.com/ClawBio/ClawBio/graphs/contributors" target="_blank">See all contributors</a>
+        <a class="btn btn-primary" href="https://github.com/ClawBio/ClawBio/blob/main/CONTRIBUTING.md" target="_blank">🧬 Add your skill</a>
+      </div>
+    </div>
+  </section>
+  <section class="cta-section">
+    <div class="section-inner">
+      <h2>Get started in 30 seconds</h2>
+      <p>Install with pip, conda, or as a Claude Code plugin. Every skill includes demo data.</p>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.5rem;font-family:monospace;font-size:0.9rem;text-align:left;max-width:540px;margin:0 auto 2rem;line-height:2;">
+        <span style="color:#8b949e"># Option 1: pip (recommended)</span><br>
+        <span style="color:var(--accent2)">pip install clawbio</span><br>
+        <span style="color:var(--accent2)">clawbio run pharmgx --demo</span><br><br>
+        <span style="color:#8b949e"># Option 2: conda</span><br>
+        <span style="color:var(--accent2)">conda install -c bioconda clawbio</span><br><br>
+        <span style="color:#8b949e"># Option 3: Claude Code plugin</span><br>
+        <span style="color:var(--accent2)">/plugin marketplace add ClawBio/ClawBio</span><br>
+        <span style="color:var(--accent2)">/plugin install clawbio</span>
+      </div>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="https://github.com/ClawBio/ClawBio" target="_blank">⭐ Star on GitHub</a>
+        <a class="btn btn-secondary" href="https://t.me/RoboTerri_bot" target="_blank">🤖 Try RoboTerri</a>
+        <a class="btn btn-secondary" href="https://docs.clawbio.ai" target="_blank">📄 Documentation</a>
+      </div>
+    </div>
+  </section>
+  <footer>
+    <div class="footer-links">
+      <a href="https://github.com/ClawBio/ClawBio" target="_blank">GitHub</a>
+      <a href="https://discord.gg/DHpmptyv" target="_blank">Discord</a>
+      <a href="https://t.me/ClawBioContributors" target="_blank">Telegram</a>
+      <a href="https://docs.clawbio.ai" target="_blank">Docs</a>
+      <a href="https://docs.clawbio.ai/research/" target="_blank">Research</a>
+      <a href="https://github.com/ClawBio/ClawBio/blob/main/CONTRIBUTING.md" target="_blank">Contributing</a>
+      <a href="https://github.com/ClawBio/ClawBio/blob/main/LICENSE" target="_blank">MIT License</a>
+      <a href="mailto:mc@manuelcorpas.com">Contact</a>
+    </div>
+    <p>🦖 ClawBio — MIT License · Built by <a href="https://www.linkedin.com/in/manuelcorpas" target="_blank">Manuel Corpas</a> and the community</p>
+  </footer>
+</body>
+</html>

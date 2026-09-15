@@ -1,0 +1,78 @@
+set dotenv-load
+
+# The Makefile is the single source of truth for build commands; these recipes
+# delegate to it so `just` and `make` always do the same thing.
+
+default: help
+
+# Build the plain server (no embedded UI) + CLI
+build:
+    make build
+
+# Full self-contained build (frontend + embedded server + CLI)
+build-embed:
+    make build-embed
+
+# Build the server WITHOUT an embedded frontend (for local dev)
+server:
+    make server
+
+# Build the server WITH the embedded frontend (builds the frontend first)
+server-embed:
+    make frontend server-embed
+
+# Build the CLI client
+cli:
+    make cli
+
+# Build the Vue frontend into web_src/dist
+frontend:
+    make frontend
+
+# Check out / update the upstream skill submodules (shallow)
+skills-submodules:
+    make skills-submodules
+
+# Generate the built-in agent skill bundle from skills/upstream/
+skills-bundle:
+    make skills-bundle
+
+# Remove the generated skill bundle
+skills-clean:
+    make skills-clean
+
+# Run Go linters
+lint:
+    make lint
+
+# Run tests
+test:
+    make test
+
+# Format code
+fmt:
+    make fmt
+
+# Regenerate Swagger docs
+swagger:
+    make swagger
+
+# Run the API server (web + monitor) in development mode
+dev:
+    make dev
+
+# Run the standalone Nomad event monitor in development mode
+dev-monitor:
+    make dev-monitor
+
+# Tidy module dependencies
+tidy:
+    make tidy
+
+# Remove build artifacts
+clean:
+    make clean
+
+# Show help
+help:
+    @just --list
