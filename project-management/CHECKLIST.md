@@ -117,7 +117,7 @@ For details, please visit: https://issuu.com/sjcrh/docs/st._jude_code_of_conduct
 
 Use this space for the material that helps someone understand the project after the event.
 
-- **Final demo or report:** [Add a link]
+- **Final demo or report:** [Day 3 demo script and known limitations](day3-demo.md)
 - **Main result:** [Summarize what the team built or learned]
 - **How to reproduce or run it:** [Link to the relevant instructions]
 - **Data and source notes:** [Link to provenance, citations, and licenses]
