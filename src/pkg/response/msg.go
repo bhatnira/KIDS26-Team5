@@ -40,7 +40,7 @@ const (
 	SchemaInvalidRepo        = "invalid pipeline repository url"
 	SchemaInvalidVersion     = "invalid pipeline version"
 	SchemaNotFound           = "nextflow_schema.json not found for this pipeline version"
-	SchemaFetchError         = "failed to fetch pipeline schema"
+	SchemaFetchError         = "could not read nextflow_schema.json for this pipeline; check that the repository URL and version (tag/branch) are correct and publicly accessible"
 
 	// Job Errors
 	JobDispatchError = "nomad job dispatch failed"
