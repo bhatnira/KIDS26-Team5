@@ -35,7 +35,7 @@ nomad:
   namespace: default
   region: global
   datacenters:
-    - cab
+    - dc1
   cores: 2
   memory: 8000
   nextflow-url: "https://github.com/nextflow-io/nextflow/releases/download/v25.04.8/nextflow-25.04.8-dist"

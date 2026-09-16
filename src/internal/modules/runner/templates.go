@@ -145,9 +145,8 @@ if [ -z "$REPO" ]; then
   echo "payload.repository is required"; exit 1
 fi
 
-# Base Nextflow config — Slurm executor + Singularity. Always written, so a
-# run without storage credentials still lands on the cluster instead of
-# falling back to Nextflow's default "local" executor.
+# Base Nextflow config — local executor + Docker containers. Always written,
+# so a run without storage credentials still lands on the local machine.
 # Quoted heredoc: nothing in this block is expanded by bash.
 cat > "$CONF" <<'NFCONF'
 process {
@@ -156,11 +155,11 @@ process {
     // To use it, Nextflow should be upgraded to 24.04.0.
     // see: https://github.com/nf-core/tools/issues/2923
     resourceLimits = [
-        memory: 60.GB,
-        cpus: 12,
+        memory: 14.GB,
+        cpus: 8,
         time: 240.h
     ]
-    executor       = 'slurm'
+    executor       = 'local'
     scratch        = false
     cache          = 'lenient'
 
@@ -171,12 +170,9 @@ process {
 }
 
 
-singularity {
-    envWhitelist = "SINGULARITY_TMPDIR,CUDA_VISIBLE_DEVICES"
-    // allow the tmp dir and GPU visible devices visible in the containers
+docker {
     enabled      = true
-    autoMounts   = true
-    runOptions   = '-p'
+    runOptions   = '--rm'
     pullTimeout  = "3 hours"
 }
 

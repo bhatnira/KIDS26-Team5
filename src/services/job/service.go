@@ -292,10 +292,9 @@ func (s *jobService) dispatchNomadJob(ctx context.Context, dto types.JobAddDto, 
 		return nil, fmt.Errorf("pipeline not found: %w", err)
 	}
 
-	// Slurm executor + Singularity (see runner.NextflowHCL). Must not be
-	// "docker": the rendered nf.config sets singularity.enabled, and Nextflow
-	// refuses to run with two container engines enabled at once.
-	dispatchMeta := map[string]string{"profile": "singularity"}
+	// Docker executor (see runner.NextflowHCL). The rendered nf.config sets
+	// docker.enabled; Nextflow refuses to run with two container engines at once.
+	dispatchMeta := map[string]string{"profile": "docker"}
 	jobPrefix := fmt.Sprintf("u%d", dto.UserId)
 
 	payload := DispatchPayload{
