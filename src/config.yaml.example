@@ -40,6 +40,11 @@ redis:
   db: 0
   password: ""
 
+# scheduler: selects which job scheduler backend to use.
+# Options: "nomad" (default) or "slurm"
+scheduler:
+  type: nomad  # or "slurm"
+
 # nomad: host/port/token are per-deployment. The rest are pipeline
 # job-registration defaults that are fine to keep in version control.
 nomad:
@@ -56,6 +61,21 @@ nomad:
   cores: 2
   memory: 8000
   nextflow-url: "https://github.com/nextflow-io/nextflow/releases/download/v25.04.8/nextflow-25.04.8-dist"
+
+# slurm: SSH-based Slurm integration for HPC clusters.
+# Only used when scheduler.type is "slurm".
+slurm:
+  host: hpc.tufts.edu
+  port: 22
+  username: ""
+  password: ""  # Consider using SSH keys for production
+  partition: normal
+  account: ""
+  time-limit: "24:00:00"
+  qos: ""
+  work-dir: "/tmp/antelope-jobs"
+  cores: 2
+  memory: 8000
 
 # zap logger.
 #

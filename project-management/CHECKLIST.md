@@ -117,12 +117,12 @@ For details, please visit: https://issuu.com/sjcrh/docs/st._jude_code_of_conduct
 
 Use this space for the material that helps someone understand the project after the event.
 
-- **Final demo or report:** [Add a link]
-- **Main result:** [Summarize what the team built or learned]
-- **How to reproduce or run it:** [Link to the relevant instructions]
-- **Data and source notes:** [Link to provenance, citations, and licenses]
-- **Known limitations:** [What should a reader be careful about?]
-- **Next steps:** [What would be worth doing next?]
+- **Final demo or report:** [DEMO-GUIDE.md](DEMO-GUIDE.md) — live demo script, team roles, and proof of results
+- **Main result:** AnTelOpe runs end-to-end locally — register pipelines, launch on Nomad, live SSE logs, AI status chat — with 6 PRs delivering quickstart fixes, translations, dashboard polish, error messages, and documentation
+- **How to reproduce or run it:** See [day3-demo.md](day3-demo.md) for the golden-path script and [src/docs/demo-pipeline.md](../src/docs/demo-pipeline.md) for pipeline registration
+- **Data and source notes:** Demo pipeline is `nf-core/testpipeline` v1.0.0 (public domain, safe to demo publicly)
+- **Known limitations:** See [day3-demo.md#known-limitations](day3-demo.md#known-limitations) — Nomad reachability, frontend build files gitignored, default language needs `.env`, AI answers depend on LLM config
+- **Next steps:** Multi-user auth, pipeline versioning, automated testing, Singularity support for cluster execution
 
 Keep generated figures and reports clearly named. Do not commit sensitive data or files that cannot be redistributed.
 
